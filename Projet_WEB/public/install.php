@@ -21,60 +21,125 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $db_name    = trim($_POST['db_name'] ?? '');
     $admin_user = trim($_POST['admin_user'] ?? '');
     $admin_pass = trim($_POST['admin_pass'] ?? '');
+    $admin_email = trim($_POST['admin_email'] ?? '');
 
-    if ($admin_user === '' || $admin_pass === '') {
-        $error = "Veuillez saisir un identifiant et un mot de passe administrateur.";
+    if ($admin_user === '' || $admin_pass === '' || $admin_email === '') {
+        $error = "Veuillez saisir email, identifiant et mot de passe administrateur.";
     } elseif ($db_host === '' || $db_user === '' || $db_name === '') {
         $error = "Veuillez remplir tous les champs obligatoires.";
     } else {
+
         mysqli_report(MYSQLI_REPORT_OFF);
-        // Connexion directe à la base existante
         $mysqli = @new mysqli($db_host, $db_user, $db_pass, $db_name);
 
         if ($mysqli->connect_errno) {
-            // Message propre pour l'utilisateur
-            $error = "Impossible de se connecter à la base de données avec ces identifiants.";
+            $error = "Impossible de se connecter à la base de données.";
         } else {
 
-            // Vérifier que la base existe réellement
+            // Vérifier que la base existe
             $check = $mysqli->query(
-                "SELECT SCHEMA_NAME
-                 FROM INFORMATION_SCHEMA.SCHEMATA
+                "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA
                  WHERE SCHEMA_NAME = '" . $mysqli->real_escape_string($db_name) . "'"
             );
 
             if (!$check || $check->num_rows === 0) {
-                $error = "La base '$db_name' n'existe pas. Merci de la créer avant l'installation.";
+                $error = "La base '$db_name' n'existe pas.";
             } else {
 
-                // Création des tables nécessaires
-                $createUsersSql = "CREATE TABLE IF NOT EXISTS users (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    username VARCHAR(50) NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    role VARCHAR(20) NOT NULL
-                )";
+                // ============================
+                // Création des tables
+                // ============================
 
-                if (!$mysqli->query($createUsersSql)) {
-                    $error = "Impossible de créer la table des utilisateurs.";
-                } else {
-                    // Création du compte admin choisi
+                $sqlUtilisateur = "
+                CREATE TABLE IF NOT EXISTS utilisateur (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    email VARCHAR(255) NOT NULL UNIQUE,
+                    mdp VARCHAR(255) NOT NULL,
+                    role ENUM('admin','user') NOT NULL DEFAULT 'user'
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                ";
+
+                $sqlCategorie = "
+                CREATE TABLE IF NOT EXISTS categorie (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    nom VARCHAR(100) NOT NULL
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                ";
+
+                $sqlAnnonce = "
+                CREATE TABLE IF NOT EXISTS annonce (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    titre VARCHAR(255) NOT NULL,
+                    `desc` TEXT,
+                    price DECIMAL(10,2) NOT NULL,
+                    livraison SET('Colissimo','Main propre','Chronopost'),
+                    categorie INT,
+                    dispo TINYINT(1) DEFAULT 1,
+                    auteur INT NOT NULL,
+                    acheteur INT NULL,
+                    FOREIGN KEY (categorie) REFERENCES categorie(id)
+                        ON DELETE SET NULL ON UPDATE CASCADE,
+                    FOREIGN KEY (auteur) REFERENCES utilisateur(id)
+                        ON DELETE CASCADE ON UPDATE CASCADE,
+                    FOREIGN KEY (acheteur) REFERENCES utilisateur(id)
+                        ON DELETE SET NULL ON UPDATE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                ";
+
+                $sqlImageAnnonce = "
+                CREATE TABLE IF NOT EXISTS imageannonce (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    url VARCHAR(255) NOT NULL,
+                    annonce_id INT NOT NULL,
+                    FOREIGN KEY (annonce_id) REFERENCES annonce(id)
+                        ON DELETE CASCADE ON UPDATE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                ";
+
+                $tables = [
+                    $sqlUtilisateur,
+                    $sqlCategorie,
+                    $sqlAnnonce,
+                    $sqlImageAnnonce
+                ];
+
+                foreach ($tables as $sql) {
+                    if (!$mysqli->query($sql)) {
+                        $error = "Erreur lors de la création des tables.";
+                        break;
+                    }
+                }
+
+                if (empty($error)) {
+
+                    // ============================
+                    // Création du compte admin
+                    // ============================
+
                     $hashed = password_hash($admin_pass, PASSWORD_DEFAULT);
 
-                    $stmt = $mysqli->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, 'admin')");
+                    $stmt = $mysqli->prepare(
+                        "INSERT INTO utilisateur (email, mdp, role)
+                         VALUES (?, ?, 'admin')"
+                    );
+
                     if (!$stmt) {
-                        $error = "Impossible de créer le compte administrateur.";
+                        $error = "Impossible de préparer la création du compte admin.";
                     } else {
-                        $stmt->bind_param("ss", $admin_user, $hashed);
+                        $stmt->bind_param("ss", $admin_email, $hashed);
+
                         if (!$stmt->execute()) {
-                            $error = "Impossible d'enregistrer le compte administrateur.";
+                            $error = "Impossible de créer le compte administrateur.";
                         } else {
 
+                            // ============================
                             // Génération du fichier config
+                            // ============================
+
                             $templatePath = BASE_PATH . '/config/config.php.example';
 
                             if (!file_exists($templatePath)) {
-                                $error = "Le fichier de configuration modèle est introuvable.";
+                                $error = "Le fichier config.php.example est introuvable.";
                             } else {
                                 $template = file_get_contents($templatePath);
 
@@ -89,21 +154,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 }
 
                                 if (file_put_contents(CONFIG_FILE, $config) === false) {
-                                    $error = "Impossible d'écrire le fichier de configuration. Vérifiez les permissions du dossier config/.";
+                                    $error = "Impossible d'écrire config.php.";
                                 } else {
 
+                                    // ============================
                                     // Flag d'installation
+                                    // ============================
+
                                     if (!is_dir(BASE_PATH . '/storage')) {
                                         mkdir(BASE_PATH . '/storage', 0755, true);
                                     }
 
-                                    if (file_put_contents(INSTALLED_FLAG, date('Y-m-d H:i:s')) === false) {
-                                        $error = "Impossible de créer le fichier d'installation. Vérifiez les permissions du dossier storage/.";
-                                    } else {
-                                        // Redirection vers le site
-                                        header('Location: /');
-                                        exit;
-                                    }
+                                    file_put_contents(INSTALLED_FLAG, date('Y-m-d H:i:s'));
+
+                                    header('Location: /');
+                                    exit;
                                 }
                             }
                         }
@@ -114,13 +179,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// valeurs par défaut pour le premier affichage
+// Valeurs par défaut
 $db_host    = $db_host    ?? '';
 $db_user    = $db_user    ?? '';
 $db_pass    = $db_pass    ?? '';
 $db_name    = $db_name    ?? '';
 $admin_user = $admin_user ?? '';
 $admin_pass = $admin_pass ?? '';
+$admin_email = $admin_email ?? '';
 
 ?>
 <!DOCTYPE html>
@@ -129,36 +195,40 @@ $admin_pass = $admin_pass ?? '';
     <meta charset="UTF-8">
     <title>Installation du site</title>
     <link rel="stylesheet" href="assets/install.css" />
-    <link rel="icon" href="assets/icon.svg" />
 </head>
 <body>
     <h1>Installation du site</h1>
 
     <?php if (!empty($error)): ?>
-        <div class="error-box"><?php echo htmlspecialchars($error); ?></div>
+        <div class="error-box"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
     <form method="post">
 
         <h3>Base de données existante</h3>
+
         <label>Hôte MySQL/MariaDB :</label><br>
-        <input type="text" name="db_host" value="<?php echo htmlspecialchars($db_host); ?>" required><br>
+        <input type="text" name="db_host" value="<?= htmlspecialchars($db_host) ?>" required><br>
 
         <label>Utilisateur :</label><br>
-        <input type="text" name="db_user" value="<?php echo htmlspecialchars($db_user); ?>" required><br>
+        <input type="text" name="db_user" value="<?= htmlspecialchars($db_user) ?>" required><br>
 
         <label>Mot de passe :</label><br>
-        <input type="password" name="db_pass" value="<?php echo htmlspecialchars($db_pass); ?>"><br>
+        <input type="password" name="db_pass" value="<?= htmlspecialchars($db_pass) ?>"><br>
 
-        <label>Nom de la base (doit exister) :</label><br>
-        <input type="text" name="db_name" value="<?php echo htmlspecialchars($db_name); ?>" required><br>
+        <label>Nom de la base :</label><br>
+        <input type="text" name="db_name" value="<?= htmlspecialchars($db_name) ?>" required><br>
 
         <h3>Compte administrateur</h3>
-        <label>Identifiant admin :</label><br>
-        <input type="text" name="admin_user" value="<?php echo htmlspecialchars($admin_user); ?>" required><br>
+
+        <label>Email admin :</label><br>
+        <input type="email" name="admin_email" value="<?= htmlspecialchars($admin_email) ?>" required><br>
+
+        <label>Admin user :</label><br>
+        <input type="text" name="admin_user" value="<?= htmlspecialchars($admin_user) ?>" required><br>
 
         <label>Mot de passe admin :</label><br>
-        <input type="password" name="admin_pass" value="<?php echo htmlspecialchars($admin_pass); ?>" required><br>
+        <input type="password" name="admin_pass" value="<?= htmlspecialchars($admin_pass) ?>" required><br>
 
         <button type="submit">Installer</button>
     </form>

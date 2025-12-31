@@ -1,0 +1,119 @@
+/* Reset minimal */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Variables globales */
+:root {
+    --bg: #f5f5f5;
+    --text: #222;
+    --primary: #2a7ae2;
+    --primary-dark: #1f5fb0;
+    --radius: 6px;
+    --shadow: 0 2px 6px rgba(0,0,0,0.1);
+    --font: "Inter", "Segoe UI", sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.5;
+    padding-bottom: 50px;
+}
+
+header {
+    background: white;
+    padding: 15px 25px;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+}
+
+nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+}
+
+nav a:hover {
+    color: var(--primary);
+}
+
+.form-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.form-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: var(--radius);
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: var(--primary-dark);
+}
+
+@media (max-width: 600px) {
+    nav a {
+        margin-right: 10px;
+    }
+
+    .form-container {
+        margin: 20px;
+    }
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between; /* Logo à gauche, liens à droite */
+    align-items: center;
+    padding: 15px 25px;
+    background: white;
+    box-shadow: var(--shadow);
+    margin-bottom: 30px;
+}
+.logo img {
+    height: 50px;
+}
+.main-nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+}
+.main-nav a:hover {
+    color: var(--primary);
+}
+
