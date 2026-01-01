@@ -5,10 +5,14 @@ error_reporting(E_ALL);
 
 define('BASE_PATH', dirname(__DIR__));
 define('CONFIG_FILE', BASE_PATH . '/config/config.php');
+define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/');
+
+
 
 // 1. Vérification installation
 if (!file_exists(CONFIG_FILE)) {
-    header('Location: /install.php');
+    $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    header('Location: ' . $base . '/install.php');
     exit;
 }
 

@@ -3,16 +3,16 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title><?= isset($title) ? htmlspecialchars($title) : "Petites Annonces" ?></title>
-    <link rel="stylesheet" href="/assets/style.css">
-    <link rel="icon" href=<?php ?>"/assets/icon.svg">
+    <title><?= isset($title) ? htmlspecialchars($title) : "E-Bazar" ?></title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/style.css">
+    <link rel="icon" href="<?= BASE_URL ?>assets/icon.svg">
 </head>
 
 <body>
 
 <header class="site-header">
     <div class="logo">
-        <img src="/assets/icon.svg" alt="Logo Ebazar">
+        <img src="<?= BASE_URL ?>assets/icon.svg" alt="Logo Ebazar">
     </div>
 
     <nav class="main-nav">

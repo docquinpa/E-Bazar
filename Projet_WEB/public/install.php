@@ -3,12 +3,14 @@
 define('BASE_PATH', dirname(__DIR__));
 define('CONFIG_FILE', BASE_PATH . '/config/config.php');
 define('INSTALLED_FLAG', BASE_PATH . '/storage/.installed');
+define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/');
+
 
 $error = '';
 
 // Déjà installé ?
 if (file_exists(CONFIG_FILE) && file_exists(INSTALLED_FLAG)) {
-    header('Location: /');
+    header('Location: ' . BASE_URL);
     exit;
 }
 
@@ -229,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($error)) {
-       header('Location: /');
+       header('Location: ' . BASE_URL);
        exit;
     }
 }
