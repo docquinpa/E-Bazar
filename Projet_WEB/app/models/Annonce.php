@@ -6,12 +6,12 @@ class AnnonceModel {
         $this->db = $this->isCorrect($pdo);
     }
 
-    public function createAnnonce($titre, $desc, $prix, $livraison, $categorieId, $dispo, $auteurId, $acheteurId) {
-        $req = $this->db->prepare("INSERT INTO Annonce (titre, description, prix, livraison, categorie, dispo, auteur, acheteur) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        return $req->execute([$titre, $desc, $prix, implode(',', $livraison), $categorieId, $dispo, $auteurId, $acheteurId]);
+    public function createAnnonce($titre, $desc, $prix, $livraison, $categorieId, $dispo, $auteurId) {
+        $req = $this->db->prepare("INSERT INTO Annonce (titre, description, prix, livraison, categorie, dispo, auteur) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        return $req->execute([$titre, $desc, $prix, implode(',', $livraison), $categorieId, $dispo, $auteurId]);
     }
 
-    public function updateAnnonce($id, $titre = null, $desc = null, $prix = null, $livraison = null, $categorieId = null, $dispo = null, $auteurId = null, $acheteurId = null) {
+    public function updateAnnonce($id, $titre = null, $desc = null, $prix = null, $livraison = null, $categorieId = null, $dispo = null, $auteurId = null) {
         $annonce = $this->getAnnonceById($id);
         if (!$annonce) {
             throw new Exception("Erreur : cette annonce n'existe pas");
@@ -48,10 +48,6 @@ class AnnonceModel {
         if ($auteurId !== null) {
             $tabreq[] = "auteur = ?";
             $params[] = $auteurId;
-        }
-        if ($acheteurId !== null) {
-            $tabreq[] = "acheteur = ?";
-            $params[] = $acheteurId;
         }
         if (empty($tabreq)) {
             throw new Exception("Aucune donnée à mettre à jour");
@@ -110,28 +106,6 @@ class AnnonceModel {
             $a['livraison'] = explode(',', $a['livraison']);
         }
         return $annonces;
-    }
-
-    public function getAnnoncesByAcheteur($acheteurId) {
-        $req = $this->db->prepare("SELECT * FROM Annonce WHERE acheteur=?");
-        $req->execute([$acheteurId]);
-        $annonces = $req->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($annonces as &$a) {
-            $a['livraison'] = explode(',', $a['livraison']);
-        }
-        return $annonces;
-    }
-
-    public function VenteAnnonce($id, $acheteurId) {
-        $annonce = $this->getAnnonceById($id);
-        if (!$annonce) {
-            throw new Exception("Erreur : cette annonce n'existe pas");
-        }
-        if (!$annonce["dispo"]) {
-            throw new Exception("L'annonce ne peut pas être vendue");
-        }
-        $req = $this->db->prepare("UPDATE Annonce SET dispo=false, acheteur=? WHERE id=?");
-        return $req->execute([$acheteurId, $id]);
     }
 
     public function masquerAnnonce($id){
