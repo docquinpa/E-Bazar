@@ -13,7 +13,7 @@ class UserModel {
             throw new InvalidArgumentException( "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre" );
         }
         $hashedPass = password_hash($password, PASSWORD_DEFAULT);
-        $req = $this->db->prepare("INSERT INTO Users (email, username, password, role) VALUES (?, ?, ?, ?)");
+        $req = $this->db->prepare("INSERT INTO utilisateur (email, username, password, role) VALUES (?, ?, ?, ?)");
         return $req->execute([$email, $username, $hashedPass, $role]);
     }
 
@@ -50,7 +50,7 @@ class UserModel {
             throw new Exception("Aucune donnée à mettre à jour");;
         }
         $params[] = $id;
-        $sql = "UPDATE Users SET " . implode(", ", $tabreq) . " WHERE id = ?";
+        $sql = "UPDATE utilisateur SET " . implode(", ", $tabreq) . " WHERE id = ?";
         $req = $this->db->prepare($sql);
         return $req->execute($params);
     }
@@ -63,25 +63,25 @@ class UserModel {
         if ($user["role"] == "admin") {
             throw new Exception("Erreur : impossible de supprimer un administrateur");
         }
-        $req = $this->db->prepare("DELETE FROM Users WHERE id=?");
+        $req = $this->db->prepare("DELETE FROM utilisateur WHERE id=?");
         return $req->execute([$id]);
     }
 
     public function getAllUsers() {
-        $req = $this->db->query("SELECT * from Users");
+        $req = $this->db->query("SELECT * from utilisateur");
         $users = $req->fetchAll(PDO::FETCH_ASSOC);
         return $users;
     }
 
     public function getUserById($id) {
-        $req = $this->db->prepare("SELECT * FROM Users WHERE id=?");
+        $req = $this->db->prepare("SELECT * FROM utilisateur WHERE id=?");
         $req->execute([$id]);
         $user = $req->fetch(PDO::FETCH_ASSOC);
         return $user;
     }
 
     public function getUserByEmail($email) {
-        $req = $this->db->prepare("SELECT * FROM Users WHERE email=?");
+        $req = $this->db->prepare("SELECT * FROM utilisateur WHERE email=?");
         $req->execute([$email]);
         $user = $req->fetch(PDO::FETCH_ASSOC);
         return $user;

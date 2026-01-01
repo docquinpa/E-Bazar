@@ -1,10 +1,11 @@
+<?php ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title><?= isset($title) ? htmlspecialchars($title) : "Petites Annonces" ?></title>
     <link rel="stylesheet" href="/assets/style.css">
-    <link rel="icon" href="/assets/icon.svg">
+    <link rel="icon" href=<?php ?>"/assets/icon.svg">
 </head>
 
 <body>
