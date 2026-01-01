@@ -17,7 +17,11 @@ class UserModel {
         return $req->execute([$email, $username, $hashedPass, $role]);
     }
 
-    public function updateUser($id, $email, $username, $password, $role) {
+    public function updateUser($id, $email = null, $username = null, $password = null, $role = null) {
+        $user = $this->getUserById($id);
+        if (!$user) {
+            throw new Exception("Utilisateur introuvable");
+        }
         $tabreq = [];
         $params = [];
         if ($email !== null) {
@@ -31,7 +35,7 @@ class UserModel {
             $tabreq[] = "username = ?";
             $params[] = $username;
         }
-        if ($password !== null && $password !== "") {
+        if ($password !== null && trim($password) !== "") {
             if (!preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/', $password)) {
                 throw new InvalidArgumentException( "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre" );
             }
@@ -43,7 +47,7 @@ class UserModel {
             $params[] = $role;
         }
          if (empty($tabreq)) {
-            return false;
+            throw new Exception("Aucune donnée à mettre à jour");;
         }
         $params[] = $id;
         $sql = "UPDATE Users SET " . implode(", ", $tabreq) . " WHERE id = ?";
@@ -52,10 +56,11 @@ class UserModel {
     }
 
     public function deleteUser($id) {
-        $req = $this->db->prepare("SELECT role FROM Users WHERE id=?");
-        $req->execute([$id]);
-        $user = $req->fetch(PDO::FETCH_ASSOC);
-        if ($user && $user["role"] == "admin") {
+        $user = $this->getUserById($id);
+        if (!$user) {
+            throw new Exception("Utilisateur introuvable");
+        }
+        if ($user["role"] == "admin") {
             throw new Exception("Erreur : impossible de supprimer un administrateur");
         }
         $req = $this->db->prepare("DELETE FROM Users WHERE id=?");
@@ -95,7 +100,7 @@ class UserModel {
 
     private function isCorrect($pdo) {
         if (is_null($pdo)) {
-            throw new AssertionError("Erreur : le PDO donné est null");
+            throw new Exception("Erreur : le PDO donné est null");
         }
         return $pdo;
     }
