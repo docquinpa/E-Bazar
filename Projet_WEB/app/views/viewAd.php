@@ -11,14 +11,14 @@ ob_start();
 
     <!-- Photos -->
     <div class="ad-photos">
-        <?php if (!empty($photos)): ?>
+        <?php if (!empty($images)): ?>
             <div class="photo-carousel">
-                <?php foreach ($photos as $p): ?>
-                    <img src="<?= BASE_URL ?>uploads/<?= $p['url'] ?>" alt="">
+                <?php foreach ($images as $img): ?>
+                    <img src="<?= BASE_URL ?>upload/<?= htmlspecialchars($img['url']) ?>" alt="">
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <img src="<?= BASE_URL ?>assets/no-image.jpg" class="single-photo">
+            <img src="<?= BASE_URL ?>assets/no-image.jpg" class="single-photo" alt="Aucune photo">
         <?php endif; ?>
     </div>
 

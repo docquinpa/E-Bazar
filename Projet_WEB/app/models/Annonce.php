@@ -98,6 +98,17 @@ class AnnonceModel {
         return $annonces;
     }
 
+    public function getAnnoncesByTitle($titre) {
+        $req = $this->db->prepare("SELECT * FROM Annonce WHERE titre LIKE :titre");
+        $req->bindValue(':titre', "%$titre%", PDO::PARAM_STR);
+        $req->execute();
+        $annonces = $req->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($annonces as &$a) {
+            $a['livraison'] = explode(',', $a['livraison']);
+        }
+        return $annonces;
+    }
+
     public function getAnnonceCountByCategorie($categorieId) {
         $req = $this->db->prepare("SELECT COUNT(id) FROM Annonce WHERE categorie=?");
         $req->execute([$categorieId]);

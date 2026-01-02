@@ -6,6 +6,9 @@
         <title><?= isset($title) ? htmlspecialchars($title) : "E-Bazar" ?></title>
         <link rel="stylesheet" href="<?= BASE_URL ?>assets/style.css">
         <link rel="icon" href="<?= BASE_URL ?>assets/icon.svg">
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
     </head>
 
     <body>
@@ -49,5 +52,6 @@
         const BASE_URL = "<?= BASE_URL ?>";
         </script>
         <script src="<?= BASE_URL ?>js/hoverPreview.js"></script>
+        <script src="<?= BASE_URL ?>js/homeCarousel.js"></script>
     </body>
 </html>

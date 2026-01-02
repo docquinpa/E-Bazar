@@ -139,7 +139,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($error)) {
 
         $tables = [
-            "CREATE TABLE IF NOT EXISTS utilisateur (
+            // UTILISATEUR
+            "CREATE TABLE IF NOT EXISTS Utilisateur (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 username VARCHAR(255) NOT NULL UNIQUE,
@@ -147,34 +148,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 role ENUM('admin','user') NOT NULL DEFAULT 'user'
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
-            "CREATE TABLE IF NOT EXISTS categorie (
+            // CATEGORIE
+            "CREATE TABLE IF NOT EXISTS Categorie (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                nom VARCHAR(100) NOT NULL
+                nom VARCHAR(100) NOT NULL UNIQUE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
-            "CREATE TABLE IF NOT EXISTS annonce (
+            // ANNONCE
+            "CREATE TABLE IF NOT EXISTS Annonce (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 titre VARCHAR(255) NOT NULL,
-                `desc` TEXT,
-                price DECIMAL(10,2) NOT NULL,
-                livraison SET('Colissimo','Main propre','Chronopost') NULL,
-                categorie INT,
+                description TEXT NOT NULL,
+                prix DECIMAL(10,2) NOT NULL,
+                livraison VARCHAR(255) NOT NULL, -- CSV
+                categorie INT NOT NULL,
                 dispo TINYINT(1) DEFAULT 1,
                 auteur INT NOT NULL,
-                FOREIGN KEY (categorie) REFERENCES categorie(id)
-                    ON DELETE SET NULL ON UPDATE CASCADE,
-                FOREIGN KEY (auteur) REFERENCES utilisateur(id)
+                FOREIGN KEY (categorie) REFERENCES Categorie(id)
+                    ON DELETE RESTRICT ON UPDATE CASCADE,
+                FOREIGN KEY (auteur) REFERENCES Utilisateur(id)
                     ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
-            "CREATE TABLE IF NOT EXISTS imageannonce (
+            // IMAGE ANNONCE
+            "CREATE TABLE IF NOT EXISTS AnnonceImage (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 url VARCHAR(255) NOT NULL,
                 annonce_id INT NOT NULL,
-                FOREIGN KEY (annonce_id) REFERENCES annonce(id)
+                FOREIGN KEY (annonce_id) REFERENCES Annonce(id)
                     ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
+
+            // VENTE
+            "CREATE TABLE IF NOT EXISTS Vente (
+                id_vente INT AUTO_INCREMENT PRIMARY KEY,
+                id_annonce INT NOT NULL,
+                id_vendeur INT NOT NULL,
+                id_acheteur INT NOT NULL,
+                livraison VARCHAR(255) NOT NULL,
+                estEnvoye BOOLEAN DEFAULT FALSE,
+                estRecu BOOLEAN DEFAULT FALSE,
+                FOREIGN KEY (id_annonce) REFERENCES Annonce(id)
+                    ON DELETE RESTRICT ON UPDATE CASCADE,
+                FOREIGN KEY (id_vendeur) REFERENCES Utilisateur(id)
+                    ON DELETE RESTRICT ON UPDATE CASCADE,
+                FOREIGN KEY (id_acheteur) REFERENCES Utilisateur(id)
+                    ON DELETE RESTRICT ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
         ];
+
 
         foreach ($tables as $sql) {
             if (!$mysqli->query($sql)) {
@@ -193,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashed = password_hash($admin_pass, PASSWORD_DEFAULT);
 
         $stmt = $mysqli->prepare(
-            "INSERT INTO utilisateur (email, username, password, role)
+            "INSERT INTO Utilisateur (email, username, password, role)
              VALUES (?, ?, ?,'admin')"
         );
 

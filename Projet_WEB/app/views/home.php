@@ -1,50 +1,76 @@
-<?php ob_start(); ?>
+<?php
+$title = "Accueil";
+ob_start();
+?>
 
-<h2>Catégories</h2>
+<div class="home-container">
 
-<?php if (!empty($categories)) : ?>
-    <ul class="category-list">
-        <?php foreach ($categories as $cat) : ?>
-            <li>
-                <a href="index.php?action=listCategory&id=<?= $cat['id'] ?>">
-                    <?= htmlspecialchars($cat['name']) ?>
-                </a>
-                (<?= $cat['count'] ?> annonces)
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php else : ?>
-    <p>Aucune catégorie disponible.</p>
-<?php endif; ?>
+    <!-- BARRE DE RECHERCHE -->
+    <div class="search-bar">
+        <div class="search-box">
 
-
-<h2>Dernières annonces</h2>
-
-<div class="latest-ads">
-    <?php if (!empty($latestAds)) : ?>
-        <?php foreach ($latestAds as $ad) : ?>
-            <div class="ad-card">
-                <a href="index.php?action=viewAd&id=<?= $ad['id'] ?>">
-                    <?php if (!empty($ad['thumbnail'])) : ?>
-                        <img src="/uploads/<?= htmlspecialchars($ad['thumbnail']) ?>" alt="Photo">
-                    <?php else : ?>
-                        <img src="/assets/no-image.jpg" alt="Pas d'image">
-                    <?php endif; ?>
-                </a>
-
-                <h3><?= htmlspecialchars($ad['title']) ?></h3>
-                <p><?= number_format($ad['price'], 2, ',', ' ') ?> €</p>
-
-                <a href="index.php?action=viewAd&id=<?= $ad['id'] ?>">Voir l'annonce</a>
+        <div class="category-dropdown">
+            <button class="category-btn">Catégories</button>
+            <div class="dropdown-content">
+                <?php foreach ($categories as $cat): ?>
+                    <a href="<?= BASE_URL ?>index.php?action=listCategory&id=<?= $cat['id'] ?>">
+                        <?= htmlspecialchars($cat['nom']) ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <p>Aucune annonce pour le moment.</p>
-    <?php endif; ?>
+        </div>
+
+        <form action="<?= BASE_URL ?>index.php" method="GET" class="search-form">
+            <input type="hidden" name="action" value="search">
+            <input type="text" name="q" placeholder="Rechercher une annonce...">
+            <button type="submit" class="search-btn">
+                <ion-icon name="search-outline"></ion-icon>
+            </button>
+        </form>
+
+    </div>
+</div>
+
+
+    <!-- BOUTON DEPOSER UNE ANNONCE -->
+    <div class="post-ad">
+        <a href="<?= BASE_URL ?>index.php?action=addAd" class="btn-post">Déposer une annonce</a>
+    </div>
+
+    <!-- CARROUSEL DES 4 DERNIÈRES ANNONCES -->
+    <h2>Dernières annonces</h2>
+
+    <div class="carousel">
+        <div class="carousel-track">
+
+            <?php foreach ($annonces as $ad): ?>
+
+                <?php
+                // Récupération des images
+                $images = $imagesByAd[$ad['id']] ?? [];
+                $urls = array_column($images, 'url');
+                $thumbnail = $urls[0] ?? "no-image.jpg";
+                ?>
+
+                <div class="carousel-item">
+                    <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
+                    <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
+                    <p><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
+                    <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn">Voir</a>
+                </div>
+
+            <?php endforeach; ?>
+
+        </div>
+    </div>
+
+    <!-- BOUTON VOIR PLUS -->
+    <div class="see-more">
+        <a href="<?= BASE_URL ?>index.php?action=listAll" class="btn-more">Voir plus d'annonces</a>
+    </div>
+
 </div>
 
 <?php
 $content = ob_get_clean();
-$title = "Accueil";
 require __DIR__ . "/layout.php";
-?>

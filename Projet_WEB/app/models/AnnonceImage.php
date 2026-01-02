@@ -26,6 +26,7 @@ class AnnonceImageModel {
             throw new Exception("L'image dépasse la taille maximale autorisée (200 ko).");
         }
 
+
         // Récupération du dossier
         $uploadDir = __DIR__ . "/../../public/upload/";
         if (!is_dir($uploadDir)) {
@@ -34,6 +35,7 @@ class AnnonceImageModel {
 
         //on donne un nom unique à l'image
         $filename = bin2hex(random_bytes(16)) . "_" . basename($file['name']);
+        $filename = truncateFilename($filename);
         $destination = $uploadDir . $filename;
 
         // Déplacer le fichier
@@ -68,7 +70,7 @@ class AnnonceImageModel {
     }
 
     public function getImagesByAnnonce($annonceId) {
-        $req = $this->db->prepare("SELECT * FROM AnnonceImage WHERE annonceId=?");
+        $req = $this->db->prepare("SELECT * FROM AnnonceImage WHERE annonce_id=?");
         $req->execute([$annonceId]);
         $images = $req->fetchAll(PDO::FETCH_ASSOC);
         return $images;

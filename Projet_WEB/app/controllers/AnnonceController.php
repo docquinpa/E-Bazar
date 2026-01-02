@@ -3,14 +3,17 @@
 class AnnonceController
 {
     private $model;
+    private $imageModel;
+    private $categorieModel;
 
-    public function __construct($pdo)
-    {
+    public function __construct($pdo) {
         $this->model = new AnnonceModel($pdo);
+        $this->imageModel = new AnnonceImageModel($pdo);
+        $this->categorieModel = new Categorie($pdo);
     }
 
-    public function viewAd()
-    {
+
+    public function viewAd() {
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
@@ -23,21 +26,60 @@ class AnnonceController
             die("Annonce introuvable");
         }
 
+        // Charger les images de l'annonce
+        $images = $this->imageModel->getImagesByAnnonce($id);
+
         require BASE_PATH . "/app/views/viewAd.php";
     }
 
-    public function listCategory()
-    {
-        $id = $_GET['id'] ?? null;
 
-        if (!$id) {
-            die("Catégorie introuvable");
+
+    public function listCategory() {
+        $categoryId = $_GET['id'] ?? null;
+        if (!$categoryId) die("Catégorie introuvable");
+
+        // Pagination
+        $page = $_GET['page'] ?? 1;
+        $limit = 10;
+
+        $total = $this->model->getAnnonceCountByCategorie($categoryId);
+        $totalPages = ceil($total / $limit);
+
+        $annonces = $this->model->getPaginationByCategorie($categoryId, $limit, $page);
+
+        // Charger les images pour chaque annonce
+        $imagesByAd = [];
+        foreach ($annonces as $a) {
+            $imagesByAd[$a['id']] = $this->imageModel->getImagesByAnnonce($a['id']);
         }
 
-        $annonces = $this->model->getAnnoncesByCategorie($id);
+        // Nom de la catégorie
+        $cat = $this->categorieModel->getCategorieById($categoryId);
+        $categoryName = $cat ? $cat['nom'] : "Catégorie inconnue";
+
 
         require BASE_PATH . "/app/views/listCategory.php";
     }
+
+
+    public function home() {
+        // Dernières annonces
+        $annonces = array_reverse($this->model->getAllAnnonces());
+        $annonces = array_slice($annonces, 0, 4);
+
+        // Charger les images pour chaque annonce
+        $imagesByAd = [];
+        foreach ($annonces as $a) {
+            $imagesByAd[$a['id']] = $this->imageModel->getImagesByAnnonce($a['id']);
+        }
+
+        // Catégories dynamiques
+        $categories = $this->categorieModel->getAllCategories();
+
+        require BASE_PATH . "/app/views/home.php";
+    }
+
+
 
     public function addAd()
     {
