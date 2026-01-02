@@ -196,7 +196,7 @@ class AnnonceController
 
         $annoncesEnVente =  $this->model->getAllAnnoncesEnVenteByAuteur($_SESSION["user"]["id"]);
         $annoncesVendues = $this->model->getAllAnnoncesVenduesByAuteur($_SESSION["user"]["id"]);
-        $annoncesAchetées = $this->model->getAllAnnoncesAcheteesByAuteur($_SESSION["user"]["id"]);
+        $annoncesAchetees = $this->model->getAllAnnoncesAcheteesByAuteur($_SESSION["user"]["id"]);
 
         require BASE_PATH . "/app/views/profile.php";
     }

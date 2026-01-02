@@ -7,7 +7,7 @@ class VenteModel {
     }
 
     public function createVente($acheteurId, $vendeurId, $annonceId, $livraison) {
-        $req = $this->db->prepare("INSERT INTO Vente (acheteurId, vendeurId, annonceId, livraison, isEnvoye, isRecu) VALUES (?, ?, ?, ?, false, false)");
+        $req = $this->db->prepare("INSERT INTO Vente (id_acheteur, id_vendeur, id_annonce, livraison, estEnvoye, estRecu) VALUES (?, ?, ?, ?, false, false)");
         return $req->execute([$acheteurId, $vendeurId, $annonceId, $livraison]);
     }
 
@@ -25,7 +25,7 @@ class VenteModel {
         if (!$vente) {
             throw new Exception("Erreur : cette vente n'existe pas");
         }
-        if ($vente["isEnvoye"]) {
+        if ($vente["estEnvoye"]) {
             throw new Exception("Erreur : le colis a déjà été envoyé");
         }
         $req = $this->db->prepare("UPDATE Vente SET livraison=? WHERE id=?");
@@ -37,7 +37,7 @@ class VenteModel {
         if (!$vente) {
             throw new Exception("Erreur : cette vente n'existe pas");
         }
-        $req = $this->db->prepare("UPDATE Vente SET isEnvoye=? WHERE id=?");
+        $req = $this->db->prepare("UPDATE Vente SET estEnvoye=? WHERE id=?");
         return $req->execute([true, $id]);
     }
 
@@ -46,10 +46,10 @@ class VenteModel {
         if (!$vente) {
             throw new Exception("Erreur : cette vente n'existe pas");
         }
-        if (!$vente["isEnvoye"]) {
+        if (!$vente["estEnvoye"]) {
             throw new Exception("Erreur : le colis n'a pas encore été envoyé");
         }
-        $req = $this->db->prepare("UPDATE Vente SET isRecu=? WHERE id=?");
+        $req = $this->db->prepare("UPDATE Vente SET estRecu=? WHERE id=?");
         return $req->execute([true, $id]);
     }
 
@@ -67,14 +67,14 @@ class VenteModel {
     }
 
     public function getAllVentesByAcheteur($acheteurId) {
-        $req = $this->db->prepare("SELECT * FROM Vente WHERE acheteurId=?");
+        $req = $this->db->prepare("SELECT * FROM Vente WHERE id_acheteur=?");
         $req->execute([$acheteurId]);
         $res = $req->fetchAll(PDO::FETCH_ASSOC);
         return $res;
     }
 
     public function getAllVentesByVendeur($vendeurId) {
-        $req = $this->db->prepare("SELECT * FROM Vente WHERE vendeurId=?");
+        $req = $this->db->prepare("SELECT * FROM Vente WHERE id_vendeur=?");
         $req->execute([$vendeurId]);
         $res = $req->fetchAll(PDO::FETCH_ASSOC);
         return $res;

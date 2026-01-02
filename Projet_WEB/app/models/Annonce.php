@@ -144,7 +144,7 @@ class AnnonceModel {
     }
 
     public function getAllAnnoncesVenduesByAuteur($auteurId) {
-        $req = $this->db->prepare("SELECT Annonce.* FROM Annonce JOIN Vente ON Annonce.id = Vente.annonceId WHERE Annonce.auteurId=?");
+        $req = $this->db->prepare("SELECT Annonce.* FROM Annonce JOIN Vente ON Annonce.id = Vente.id_annonce WHERE Annonce.auteur=?");
         $req->execute([$auteurId]);
         $annonces = $req->fetchAll(PDO::FETCH_ASSOC);
         foreach ($annonces as &$a) {
@@ -154,7 +154,7 @@ class AnnonceModel {
     }
 
     public function getAllAnnoncesEnVenteByAuteur($auteurId) {
-        $req = $this->db->prepare("SELECT * FROM Annonce WHERE auteurId=? AND id NOT IN (SELECT annonceId FROM Vente)");
+        $req = $this->db->prepare("SELECT * FROM Annonce WHERE auteur=? AND id NOT IN (SELECT id_annonce FROM Vente)");
         $req->execute([$auteurId]);
         $annonces = $req->fetchAll(PDO::FETCH_ASSOC);
         foreach ($annonces as &$a) {
@@ -164,7 +164,7 @@ class AnnonceModel {
     }
 
     public function getAllAnnoncesAcheteesByAuteur($auteurId) {
-        $req = $this->db->prepare("SELECT Annonce.* FROM Annonce JOIN Vente ON Annonce.id = Vente.annonceId WHERE Vente.acheteurId=?");
+        $req = $this->db->prepare("SELECT Annonce.* FROM Annonce JOIN Vente ON Annonce.id = Vente.id_annonce WHERE Vente.id_acheteur=?");
         $req->execute([$auteurId]);
         $annonces = $req->fetchAll(PDO::FETCH_ASSOC);
         foreach ($annonces as &$a) {
