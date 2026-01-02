@@ -5,19 +5,27 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!images || images.length <= 1) return;
 
         let index = 0;
-        let interval = null;
         const img = container.querySelector("img");
 
-        container.addEventListener("mouseenter", () => {
-            interval = setInterval(() => {
-                index = (index + 1) % images.length;
-                img.src = BASE_URL + "uploads/" + images[index];
-            }, 800);
+        const leftBtn = container.querySelector(".left");
+        const rightBtn = container.querySelector(".right");
+
+        function updateImage() {
+            img.src = BASE_URL + "upload/" + images[index];
+        }
+
+        // Flèche droite
+        rightBtn.addEventListener("click", e => {
+            e.stopPropagation();
+            index = (index + 1) % images.length;
+            updateImage();
         });
 
-        container.addEventListener("mouseleave", () => {
-            clearInterval(interval);
-            img.src = BASE_URL + "uploads/" + images[0];
+        // Flèche gauche
+        leftBtn.addEventListener("click", e => {
+            e.stopPropagation();
+            index = (index - 1 + images.length) % images.length;
+            updateImage();
         });
     });
 });

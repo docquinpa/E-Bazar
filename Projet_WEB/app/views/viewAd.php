@@ -12,10 +12,10 @@ ob_start();
     <!-- Photos -->
     <div class="ad-photos">
         <?php if (!empty($images)): ?>
-            <div class="photo-carousel">
-                <?php foreach ($images as $img): ?>
-                    <img src="<?= BASE_URL ?>upload/<?= htmlspecialchars($img['url']) ?>" alt="">
-                <?php endforeach; ?>
+            <div class="photo-viewer" data-images='<?= json_encode(array_column($images, "url")) ?>'>
+                <img class="viewer-img" src="<?= BASE_URL ?>upload/<?= htmlspecialchars($images[0]['url']) ?>" alt="">
+                <button class="viewer-arrow left">‹</button>
+                <button class="viewer-arrow right">›</button>
             </div>
         <?php else: ?>
             <img src="<?= BASE_URL ?>assets/no-image.jpg" class="single-photo" alt="Aucune photo">

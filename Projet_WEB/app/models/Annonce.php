@@ -116,10 +116,15 @@ class AnnonceModel {
     }
 
     public function getPaginationByCategorie($categorieId, $limit, $page) {
-        $req = $this->db->prepare("SELECT * FROM Annonce WHERE categorie=? ORDER BY id DESC LIMIT :limit OFFSET :offset");
-        $req->bindValue(1, $categorieId, PDO::PARAM_INT);
+        $req = $this->db->prepare("
+            SELECT * FROM Annonce
+            WHERE categorie = :cat
+            ORDER BY id DESC
+            LIMIT :limit OFFSET :offset
+        ");
+        $req->bindValue(':cat', $categorieId, PDO::PARAM_INT);
         $req->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-        $req->bindValue(':offset', (int) ($limit *($page - 1)), PDO::PARAM_INT);
+        $req->bindValue(':offset', (int)($limit * ($page - 1)), PDO::PARAM_INT);
         $req->execute();
         $pagination = $req->fetchAll(PDO::FETCH_ASSOC);
         foreach ($pagination as &$a) {

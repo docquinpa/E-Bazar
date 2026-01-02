@@ -24,6 +24,8 @@ ob_start();
             <div class="ad-image"
                  data-images='<?= json_encode($urls) ?>'>
                 <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
+                <button class="arrow left">‹</button>
+                <button class="arrow right">›</button>
             </div>
 
             <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
