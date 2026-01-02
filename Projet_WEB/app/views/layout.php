@@ -22,7 +22,7 @@
                 <a href="index.php?action=home">Accueil</a>
 
                 <?php if (!empty($_SESSION['user'])) : ?>
-                <a href="index.php?action=dashboard">Mon espace</a>
+                <a href="index.php?action=profile">Mon espace</a>
 
                 <?php if ($_SESSION['user']['role'] === 'admin') : ?>
                     <a href="index.php?action=admin">Admin</a>
@@ -48,10 +48,18 @@
         <footer>
             <p>Projet Web — Plateforme de petites annonces</p>
         </footer>
+        <div id="lightbox" class="lightbox hidden">
+            <span class="close-lightbox">×</span>
+            <img id="lightbox-img" src="" alt="">
+            <button class="lightbox-arrow left">‹</button>
+            <button class="lightbox-arrow right">›</button>
+        </div>
+
         <script>
         const BASE_URL = "<?= BASE_URL ?>";
         </script>
-        <script src="<?= BASE_URL ?>js/hoverPreview.js"></script>
         <script src="<?= BASE_URL ?>js/homeCarousel.js"></script>
+        <script src="<?= BASE_URL ?>js/photoViewer.js"></script>
+        <script src="<?= BASE_URL ?>js/lightbox.js"></script>
     </body>
 </html>

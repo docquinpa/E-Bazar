@@ -188,18 +188,36 @@ class AnnonceController
     }
 
     public function profile() {
-        if (!isset($_SESSION["user"])) {
-            $redirect = urlencode("profile");
-            header("Location:". BASE_URL . "index.php?action=login&redirect=$redirect");
-            exit;
-        }
-
-        $annoncesEnVente =  $this->model->getAllAnnoncesEnVenteByAuteur($_SESSION["user"]["id"]);
-        $annoncesVendues = $this->model->getAllAnnoncesVenduesByAuteur($_SESSION["user"]["id"]);
-        $annoncesAchetees = $this->model->getAllAnnoncesAcheteesByAuteur($_SESSION["user"]["id"]);
-
-        require BASE_PATH . "/app/views/profile.php";
+    if (!isset($_SESSION["user"])) {
+        $redirect = urlencode("profile");
+        header("Location:". BASE_URL . "index.php?action=login&redirect=$redirect");
+        exit;
     }
+
+    $userId = $_SESSION["user"]["id"];
+
+    // Récupération des annonces
+    $annoncesEnVente =  $this->model->getAllAnnoncesEnVenteByAuteur($userId);
+    $annoncesVendues = $this->model->getAllAnnoncesVenduesByAuteur($userId);
+    $annoncesAchetees = $this->model->getAllAnnoncesAcheteesByAuteur($userId);
+
+    $imagesByAd = [];
+
+    foreach ($annoncesEnVente as $ad) {
+        $imagesByAd[$ad['id']] = $this->imageModel->getImagesByAnnonce($ad['id']);
+    }
+
+    foreach ($annoncesAchetees as $ad) {
+        $imagesByAd[$ad['id']] = $this->imageModel->getImagesByAnnonce($ad['id']);
+    }
+
+    foreach ($annoncesVendues as $ad) {
+        $imagesByAd[$ad['id']] = $this->imageModel->getImagesByAnnonce($ad['id']);
+    }
+
+    require BASE_PATH . "/app/views/profile.php";
+}
+
 
 }
 
