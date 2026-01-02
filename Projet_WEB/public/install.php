@@ -161,13 +161,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 categorie INT,
                 dispo TINYINT(1) DEFAULT 1,
                 auteur INT NOT NULL,
-                acheteur INT NULL,
                 FOREIGN KEY (categorie) REFERENCES categorie(id)
                     ON DELETE SET NULL ON UPDATE CASCADE,
                 FOREIGN KEY (auteur) REFERENCES utilisateur(id)
-                    ON DELETE CASCADE ON UPDATE CASCADE,
-                FOREIGN KEY (acheteur) REFERENCES utilisateur(id)
-                    ON DELETE SET NULL ON UPDATE CASCADE
+                    ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;",
 
             "CREATE TABLE IF NOT EXISTS imageannonce (

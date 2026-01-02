@@ -7,7 +7,7 @@ class AnnonceModel {
     }
 
     public function createAnnonce($titre, $desc, $prix, $livraison, $categorieId, $dispo, $auteurId) {
-        $req = $this->db->prepare("INSERT INTO Annonce (titre, description, prix, livraison, categorie, dispo, auteur) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $req = $this->db->prepare("INSERT INTO Annonce (titre, description, prix, livraison, categorie, dispo, auteur) VALUES (?, ?, ?, ?, ?, ?, ?)");
         return $req->execute([$titre, $desc, $prix, implode(',', $livraison), $categorieId, $dispo, $auteurId]);
     }
 
