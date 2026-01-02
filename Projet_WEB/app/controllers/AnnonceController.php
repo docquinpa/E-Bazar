@@ -5,11 +5,13 @@ class AnnonceController
     private $model;
     private $imageModel;
     private $categorieModel;
+    private $venteModel;
 
     public function __construct($pdo) {
         $this->model = new AnnonceModel($pdo);
         $this->imageModel = new AnnonceImageModel($pdo);
         $this->categorieModel = new Categorie($pdo);
+        $this->venteModel = new VenteModel($pdo);
     }
 
 
@@ -170,8 +172,6 @@ class AnnonceController
 
         $id = $_GET['id'] ?? null;
         if (!$id) die("Annonce introuvable");
-
-        // Ici tu feras la logique pour marquer comme reçu
     }
 
     public function myAds()
@@ -185,6 +185,20 @@ class AnnonceController
         $annonces = $this->model->getAnnoncesByAuteur($_SESSION['user']['id']);
 
         require BASE_PATH . "/app/views/myAds.php";
+    }
+
+    public function profile() {
+        if (!isset($_SESSION["user"])) {
+            $redirect = urlencode("profile");
+            header("Location:". BASE_URL . "index.php?action=login&redirect=$redirect");
+            exit;
+        }
+
+        $annoncesEnVente =  $this->model->getAllAnnoncesEnVenteByAuteur($_SESSION["user"]["id"]);
+        $annoncesVendues = $this->model->getAllAnnoncesVenduesByAuteur($_SESSION["user"]["id"]);
+        $annoncesAchetées = $this->model->getAllAnnoncesAcheteesByAuteur($_SESSION["user"]["id"]);
+
+        require BASE_PATH . "/app/views/profile.php";
     }
 
 }

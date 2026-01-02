@@ -29,6 +29,7 @@ require_once BASE_PATH . '/app/models/User.php';
 require_once BASE_PATH . '/app/models/Annonce.php';
 require_once BASE_PATH . '/app/models/AnnonceImage.php';
 require_once BASE_PATH . '/app/models/Categorie.php';
+require_once BASE_PATH . '/app/models/Vente.php';
 
 require_once BASE_PATH . '/app/controllers/UserController.php';
 require_once BASE_PATH . '/app/controllers/AnnonceController.php';
@@ -71,6 +72,10 @@ switch ($action) {
         $annonceController->addAd();
         break;
 
+    case 'profile':
+        $annonceController->profile();
+        break;
+    
     case 'home':
     default:
         $annonceController->home();
