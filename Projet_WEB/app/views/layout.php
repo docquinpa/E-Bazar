@@ -22,7 +22,7 @@
                 <a href="index.php?action=home">Accueil</a>
 
                 <?php if (!empty($_SESSION['user'])) : ?>
-                <a href="index.php?action=dashboard">Mon espace</a>
+                <a href="index.php?action=profile">Mon espace</a>
 
                 <?php if ($_SESSION['user']['role'] === 'admin') : ?>
                     <a href="index.php?action=admin">Admin</a>
