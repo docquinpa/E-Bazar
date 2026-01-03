@@ -61,7 +61,7 @@ class UserController {
         exit;
     }
 
-    public function admin() {
+    public function admin($error = null, $success = null) {
         if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
             header("Location:". BASE_URL . "index.php?action=login");
             exit;
@@ -78,10 +78,17 @@ class UserController {
         }
         $name = $_POST['name'] ?? null;
         if ($name) {
-            $this->categorieModel->createCategorie($name);
+            try {
+                if (!$this->categorieModel->createCategorie($name)) {
+                    $error = "Erreur lors de l'ajout";
+                } else {
+                    $success = "La catégorie a bien été ajoutée";
+                }
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+            }
         }
-        header("Location: index.php?action=admin");
-        exit;
+        $this->admin($error ?? null, $success ?? null);
     }
     public function modifyCategory() {
         if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
@@ -91,10 +98,51 @@ class UserController {
         $oldName = $_POST['category'] ?? null;
         $newName = $_POST['name'] ?? null;
         if ($oldName && $newName) {
-            $this->categorieModel->updateCategorie($this->categorieModel->getCategorieByNom($oldName)['id'], $newName);
+            try {
+                if (!$this->categorieModel->updateCategorie($this->categorieModel->getCategorieByNom($oldName)['id'], $newName)){
+                    $error = "Erreur lors de la modification";
+                } else {
+                    $success = "La modification a été effectuée";
+                }
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+            }
         }
-        header("Location: index.php?action=admin");
-        exit;
+        $this->admin($error ?? null, $success ?? null);
     }
+
+    public function searchUser() {
+        if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
+            header("Location: index.php?action=login");
+            exit;
+        }
+        $searchedName = $_GET['search'] ?? null;
+        if ($searchedName) {
+            $userSearch = $this->userModel->getUserLikeUsername($searchedName);
+        }
+        $categories = $this->categorieModel->getAllCategories();
+        require __DIR__ . "/../views/admin.php";
+    }
+
+    public function deleteUser() {
+        if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
+            header("Location: index.php?action=login");
+            exit;
+        }
+        $id = $_POST["id"] ?? null;
+        if ($id) {
+            try {
+                if (!$this->userModel->deleteUser($id)){
+                    $error = "Erreur lors de la suppression";
+                } else {
+                    $success = "L'utilisateur a bien été supprimé";
+                }
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+            }
+        }
+        $this->admin($error ?? null, $success ?? null);
+    }
+
 }
 ?>

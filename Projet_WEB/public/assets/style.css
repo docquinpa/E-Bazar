@@ -104,6 +104,12 @@ button:hover {
     box-shadow: var(--shadow);
     margin-bottom: 30px;
 }
+
+.site-footer {
+    text-align: center;
+    margin-top: 2px;
+}
+
 .logo img {
     height: 100px;
 }
@@ -684,6 +690,24 @@ button:hover {
     .ad-form {
         padding: 20px;
     }
+}
+
+/* ============================
+   PAGE ADMIN
+============================ */
+.tableSearch {
+    margin : auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff;
+    border-spacing: 5px 1px;
+}
+
+.centerTitle, .info-result {
+    text-align : center;
+    margin-top : 10px;
+    margin-bottom : 10px;
 }
 
 

@@ -87,6 +87,14 @@ switch ($action) {
     case 'modifyCategory':
         $userController->modifyCategory();
         break;
+
+    case 'searchUser' :
+        $userController->searchUser();
+        break;
+        
+    case 'deleteUser':
+        $userController->deleteUser();
+        break;
     
     case 'home':
     default:

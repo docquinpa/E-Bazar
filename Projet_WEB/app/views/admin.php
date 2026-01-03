@@ -3,7 +3,13 @@ $title = "Admin";
 ob_start();
 ?>
 <h2>Panneau d'administration :</h2>
-<h3>Ajouter une catégorie :</h3>
+<?php if (isset($error)): ?>
+    <p class="infos-result"><?= $error ?></p>
+<?php endif ?>
+<?php if (isset($success)): ?>
+    <p class="infos-result"><?= $success ?></p>
+<?php endif ?>
+<h3 class="centerTitle">Ajouter une catégorie :</h3>
 <div class="form-container">
     <form action="<?= BASE_URL ?>index.php?action=addCategory" method="POST">
         <label for="name_cat">Donnez le nom de votre Catégorie :</label>
@@ -25,6 +31,36 @@ ob_start();
         <input type ="submit" value="Modifier">
     </form>
 </div>
+<h3 class="centerTitle">Rechercher un utilisateur :</h3> 
+<div class="form-container">
+    <form method="GET" action="<?= BASE_URL ?>index.php?action=searchUser">
+        <input type="hidden" name="action" value="searchUser">
+        <input type="text" name="search" placeholder="Nom" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+        <button type="submit">Rechercher</button>
+    </form> 
+</div>
+<?php if (!isset($userSearch) || empty($userSearch)): ?>
+    <p class="info-result">Aucun résultat</p>
+<?php else: ?>
+    <table class="tableSearch">
+        <tr> <th>ID</th> <th>Email</th> <th>Pseudo</th> <th>Rôle</th> <th>Action</th></tr>
+        <?php foreach ($userSearch as $u): ?>
+        <tr>
+            <td><?= $u['id'] ?></td>
+            <td><?= htmlspecialchars($u['email']) ?></td>
+            <td><?= htmlspecialchars($u['username']) ?></td>
+            <td><?= htmlspecialchars($u['role']) ?></td>
+            <td> <?php if ($u['role'] !== 'admin'): ?>
+                <form action="<?= BASE_URL ?>index.php?action=deleteUser" method="POST" onsubmit="return confirm('Supprimer cet utilisateur ?')">
+                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                    <button type="submit">Supprimer</button>
+                </form>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif;?>
 <?php
 $content = ob_get_clean();
 require __DIR__ . "/layout.php";

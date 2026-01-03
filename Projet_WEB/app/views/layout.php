@@ -45,7 +45,7 @@
             ?>
         </main>
 
-        <footer>
+        <footer class="site-footer">
             <p>Projet Web — Plateforme de petites annonces</p>
         </footer>
         <div id="lightbox" class="lightbox hidden">
