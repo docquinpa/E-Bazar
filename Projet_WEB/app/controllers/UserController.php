@@ -4,8 +4,11 @@ class UserController {
 
     private $userModel;
 
+    private $categorieModel;
+
     public function __construct($pdo) {
         $this->userModel = new UserModel($pdo);
+        $this->categorieModel = new Categorie($pdo);
     }
 
     public function showRegisterForm() {
@@ -56,6 +59,16 @@ class UserController {
         session_destroy();
         header("Location: index.php?action=home");
         exit;
+    }
+
+    public function admin() {
+        if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
+            header("Location:". BASE_URL . "index.php?action=login");
+            exit;
+        }
+
+        $categories = $this->categorieModel->getAllCategories();
+        require __DIR__ . "/../views/admin.php";
     }
 }
 ?>

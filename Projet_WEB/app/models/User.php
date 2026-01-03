@@ -87,6 +87,12 @@ class UserModel {
         return $user;
     }
 
+    public function getUserLikeUsername($username) {
+        $req = $this->db->prepare("SELECT * FROM Utilisateur WHERE username LIKE ?");
+        $req->execute(["%{$username}%"]);
+        return $req->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function authentification($email, $password) {
         $user = $this->getUserByEmail($email);
         if ($user) {

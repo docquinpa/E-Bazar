@@ -75,6 +75,10 @@ switch ($action) {
     case 'profile':
         $annonceController->profile();
         break;
+
+    case 'admin':
+        $userController->admin();
+        break;
     
     case 'home':
     default:
