@@ -50,7 +50,7 @@
         </footer>
         <div id="lightbox" class="lightbox hidden">
             <span class="close-lightbox">×</span>
-            <img id="lightbox-img" src="" alt="">
+            <img id="lightbox-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="">
             <button class="lightbox-arrow left">‹</button>
             <button class="lightbox-arrow right">›</button>
         </div>

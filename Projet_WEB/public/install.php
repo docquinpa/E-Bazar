@@ -160,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 titre VARCHAR(255) NOT NULL,
                 description TEXT NOT NULL,
                 prix DECIMAL(10,2) NOT NULL,
-                livraison VARCHAR(255) NOT NULL,
+                livraison SET('Mondial Relay', 'Colissimo', 'La Poste', 'Remise en main propre') NOT NULL,
                 categorie INT NOT NULL,
                 dispo TINYINT(1) DEFAULT 1,
                 auteur INT NOT NULL,

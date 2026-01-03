@@ -91,31 +91,62 @@ class AnnonceController
             exit;
         }
 
+        $error = null;
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $titre = $_POST['titre'];
             $desc = $_POST['description'];
             $prix = $_POST['prix'];
-            $livraison = $_POST['livraison']; // tableau
+            $livraison = isset($_POST['livraison']) ? implode(',', $_POST['livraison']) : '';
             $categorie = $_POST['categorie'];
             $auteur = $_SESSION['user']['id'];
 
-            $this->model->createAnnonce(
-                $titre,
-                $desc,
-                $prix,
-                $livraison,
-                $categorie,
-                true,      // dispo = true par défaut
-                $auteur
-            );
+            try {
 
-            header("Location: " . BASE_URL . "index.php?action=myAds");
-            exit;
+                // 1) Création de l'annonce
+                $annonceId = $this->model->createAnnonce(
+                    $titre,
+                    $desc,
+                    $prix,
+                    $livraison,
+                    $categorie,
+                    true,
+                    $auteur
+                );
+
+                // 2) Upload des images
+                if (!empty($_FILES['images']['name'][0])) {
+
+                    foreach ($_FILES['images']['tmp_name'] as $index => $tmp) {
+
+                        $file = [
+                            'name'     => $_FILES['images']['name'][$index],
+                            'type'     => $_FILES['images']['type'][$index],
+                            'tmp_name' => $_FILES['images']['tmp_name'][$index],
+                            'error'    => $_FILES['images']['error'][$index],
+                            'size'     => $_FILES['images']['size'][$index],
+                        ];
+
+                        $this->imageModel->createImage($file, $annonceId);
+                    }
+                }
+
+                header("Location: " . BASE_URL . "index.php?action=myAds");
+                exit;
+
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+            }
         }
+
+
+        $livraisonOptions = $this->model->getLivraisonOptions();
+        $categories = $this->categorieModel->getAllCategories();
 
         require BASE_PATH . "/app/views/addAd.php";
     }
+
 
     public function deleteAd()
     {
