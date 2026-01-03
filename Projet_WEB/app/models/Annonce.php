@@ -8,7 +8,8 @@ class AnnonceModel {
 
     public function createAnnonce($titre, $desc, $prix, $livraison, $categorieId, $dispo, $auteurId) {
         $req = $this->db->prepare("INSERT INTO Annonce (titre, description, prix, livraison, categorie, dispo, auteur) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        return $req->execute([$titre, $desc, $prix, implode(',', $livraison), $categorieId, $dispo, $auteurId]);
+        $req->execute([$titre, $desc, $prix, $livraison, $categorieId, $dispo, $auteurId]);
+        return $this->db->lastInsertId();
     }
 
     public function updateAnnonce($id, $titre = null, $desc = null, $prix = null, $livraison = null, $categorieId = null, $dispo = null, $auteurId = null) {
@@ -197,5 +198,25 @@ class AnnonceModel {
         }
         return $pdo;
     }
+
+    public function getLivraisonOptions() {
+        $sql = "SHOW COLUMNS FROM Annonce LIKE 'livraison'";
+        $stmt = $this->db->query($sql);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
+            return [];
+        }
+
+        $type = $row['Type'];
+        if (preg_match("/^set\((.*)\)$/i", $type, $matches)) {
+            return str_getcsv($matches[1], ',', "'", "\\");
+
+        }
+
+        return [];
+    }
+
+
 }
 ?>
