@@ -70,5 +70,31 @@ class UserController {
         $categories = $this->categorieModel->getAllCategories();
         require __DIR__ . "/../views/admin.php";
     }
+
+    public function addCategory() { 
+        if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
+            header("Location: index.php?action=login");
+            exit;
+        }
+        $name = $_POST['name'] ?? null;
+        if ($name) {
+            $this->categorieModel->createCategorie($name);
+        }
+        header("Location: index.php?action=admin");
+        exit;
+    }
+    public function modifyCategory() {
+        if (!isset($_SESSION["user"]) || $_SESSION["user"]["role"] != "admin") {
+            header("Location: index.php?action=login");
+            exit;
+        }
+        $oldName = $_POST['category'] ?? null;
+        $newName = $_POST['name'] ?? null;
+        if ($oldName && $newName) {
+            $this->categorieModel->updateCategorie($this->categorieModel->getCategorieByNom($oldName)['id'], $newName);
+        }
+        header("Location: index.php?action=admin");
+        exit;
+    }
 }
 ?>

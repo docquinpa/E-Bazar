@@ -9,7 +9,7 @@
     <p style="color:green;">Compte créé avec succès, vous pouvez vous connecter.</p>
 <?php endif; ?>
 <div class="form-container">
-    <form method="post" action="index.php?action=login">
+    <form method="post" action="<?= BASE_URL ?>index.php?action=login">
         <label>Email :</label><br>
         <input type="email" name="email" required><br><br>
 

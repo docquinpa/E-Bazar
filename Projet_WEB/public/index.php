@@ -79,6 +79,14 @@ switch ($action) {
     case 'admin':
         $userController->admin();
         break;
+
+    case 'addCategory':
+        $userController->addCategory();
+        break;
+        
+    case 'modifyCategory':
+        $userController->modifyCategory();
+        break;
     
     case 'home':
     default:
