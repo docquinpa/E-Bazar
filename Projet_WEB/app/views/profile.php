@@ -3,13 +3,15 @@ $title = "Mon profil";
 ob_start();
 ?>
 <h2 class="page-title">Mon profil</h2>
+<div class="form-container">
 <label for="sectionSelect">Afficher :</label>
-<select id="sectionSelect">
-    <option value="vente">Mes annonces en ligne</option>
-    <option value="vendues">Mes ventes (à livrer)</option>
-    <option value="achetees">Mes achats</option>
-    <option value="livrees">Biens livrés</option>
-</select> 
+    <select class="select-input" id="sectionSelect">
+        <option value="vente">Mes annonces en ligne</option>
+        <option value="vendues">Mes ventes (à livrer)</option>
+        <option value="achetees">Mes achats</option>
+        <option value="livrees">Biens livrés</option>
+    </select>
+</div>
 
 <!-- ============================
      1) ANNONCES EN VENTE

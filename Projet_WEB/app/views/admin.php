@@ -20,7 +20,7 @@ ob_start();
 <div class="form-container">
     <form action="<?= BASE_URL ?>index.php?action=updateCategory" method="POST">
         <label for="choice_cat">Choisir la Catégorie à modifier:</label>
-        <select id="choice_cat" name="category">
+        <select class="select-input" id="choice_cat" name="category">
             <option value="" disabled selected>Choisir une option</option>
             <?php foreach ($categories as $cat): ?>
                 <option value="<?=$cat["nom"]?>"><?=$cat["nom"]?></option>

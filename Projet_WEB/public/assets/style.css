@@ -704,12 +704,11 @@ button:hover {
     outline: none;
 }
 
-#choice_cat {
+.select-input {
     width : 100%;
     height : 3em;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-
 }
 
 /* Textarea */
