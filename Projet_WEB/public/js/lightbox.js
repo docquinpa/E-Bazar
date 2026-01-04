@@ -31,35 +31,29 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    leftArrow.addEventListener("click", () => {
+    leftArrow.addEventListener("click", e => {
+        e.stopPropagation();
         currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
         updateLightbox();
     });
 
-    rightArrow.addEventListener("click", () => {
+    rightArrow.addEventListener("click", e => {
+        e.stopPropagation();
         currentIndex = (currentIndex + 1) % currentImages.length;
         updateLightbox();
     });
 
 
-    // --- Intégration avec ton viewer ---
-    document.querySelectorAll(".photo-viewer").forEach(viewer => {
+    // --- Nouvelle galerie simple ---
+    const galleryImages = Array.from(document.querySelectorAll(".ad-photo"));
 
-        const images = JSON.parse(viewer.dataset.images);
-        const img = viewer.querySelector(".viewer-img");
+    // Récupère juste les noms de fichiers
+    const imageList = galleryImages.map(img => img.dataset.filename);
 
+    galleryImages.forEach((img, index) => {
         img.addEventListener("click", () => {
-            openLightbox(images, 0);
-        });
-
-        viewer.querySelector(".viewer-arrow.left").addEventListener("click", () => {
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            img.src = BASE_URL + "upload/" + images[currentIndex];
-        });
-
-        viewer.querySelector(".viewer-arrow.right").addEventListener("click", () => {
-            currentIndex = (currentIndex + 1) % images.length;
-            img.src = BASE_URL + "upload/" + images[currentIndex];
+            openLightbox(imageList, index);
         });
     });
+
 });

@@ -5,42 +5,37 @@ class AnnonceController
     private $model;
     private $imageModel;
     private $categorieModel;
-    private $venteModel;
+    private $db;
 
     public function __construct($pdo) {
         $this->model = new AnnonceModel($pdo);
         $this->imageModel = new AnnonceImageModel($pdo);
         $this->categorieModel = new Categorie($pdo);
-        $this->venteModel = new VenteModel($pdo);
+        $this->db = $pdo;
     }
 
-
+    /* ============================
+       AFFICHER UNE ANNONCE
+    ============================ */
     public function viewAd() {
         $id = $_GET['id'] ?? null;
-
-        if (!$id) {
-            die("Annonce introuvable");
-        }
+        if (!$id) die("Annonce introuvable");
 
         $annonce = $this->model->getAnnonceById($id);
+        if (!$annonce) die("Annonce introuvable");
 
-        if (!$annonce) {
-            die("Annonce introuvable");
-        }
-
-        // Charger les images de l'annonce
         $images = $this->imageModel->getImagesByAnnonce($id);
 
         require BASE_PATH . "/app/views/viewAd.php";
     }
 
-
-
+    /* ============================
+       LISTE PAR CATÉGORIE
+    ============================ */
     public function listCategory() {
         $categoryId = $_GET['id'] ?? null;
         if (!$categoryId) die("Catégorie introuvable");
 
-        // Pagination
         $page = $_GET['page'] ?? 1;
         $limit = 10;
 
@@ -49,42 +44,38 @@ class AnnonceController
 
         $annonces = $this->model->getPaginationByCategorie($categoryId, $limit, $page);
 
-        // Charger les images pour chaque annonce
         $imagesByAd = [];
         foreach ($annonces as $a) {
             $imagesByAd[$a['id']] = $this->imageModel->getImagesByAnnonce($a['id']);
         }
 
-        // Nom de la catégorie
         $cat = $this->categorieModel->getCategorieById($categoryId);
         $categoryName = $cat ? $cat['nom'] : "Catégorie inconnue";
-
 
         require BASE_PATH . "/app/views/listCategory.php";
     }
 
-
+    /* ============================
+       PAGE D'ACCUEIL
+    ============================ */
     public function home() {
-        // Dernières annonces
         $annonces = array_reverse($this->model->getAllAnnonces());
         $annonces = array_slice($annonces, 0, 4);
 
-        // Charger les images pour chaque annonce
         $imagesByAd = [];
         foreach ($annonces as $a) {
             $imagesByAd[$a['id']] = $this->imageModel->getImagesByAnnonce($a['id']);
         }
 
-        // Catégories dynamiques
-        $categories = $this->categorieModel->getAllCategories();
+        $categories = $this->categorieModel->getAllWithCount();
 
         require BASE_PATH . "/app/views/home.php";
     }
 
-
-
-    public function addAd()
-    {
+    /* ============================
+       AJOUTER UNE ANNONCE
+    ============================ */
+    public function addAd() {
         if (!isset($_SESSION['user'])) {
             $redirect = urlencode("addAd");
             header("Location: " . BASE_URL . "index.php?action=login&redirect=$redirect");
@@ -102,24 +93,15 @@ class AnnonceController
             $categorie = $_POST['categorie'];
             $auteur = $_SESSION['user']['id'];
 
-            try {
+            $this->db->beginTransaction();
 
-                // 1) Création de l'annonce
+            try {
                 $annonceId = $this->model->createAnnonce(
-                    $titre,
-                    $desc,
-                    $prix,
-                    $livraison,
-                    $categorie,
-                    true,
-                    $auteur
+                    $titre, $desc, $prix, $livraison, $categorie, true, $auteur
                 );
 
-                // 2) Upload des images
                 if (!empty($_FILES['images']['name'][0])) {
-
                     foreach ($_FILES['images']['tmp_name'] as $index => $tmp) {
-
                         $file = [
                             'name'     => $_FILES['images']['name'][$index],
                             'type'     => $_FILES['images']['type'][$index],
@@ -127,19 +109,19 @@ class AnnonceController
                             'error'    => $_FILES['images']['error'][$index],
                             'size'     => $_FILES['images']['size'][$index],
                         ];
-
                         $this->imageModel->createImage($file, $annonceId);
                     }
                 }
 
+                $this->db->commit();
                 header("Location: " . BASE_URL . "index.php?action=myAds");
                 exit;
 
             } catch (Exception $e) {
+                $this->db->rollBack();
                 $error = $e->getMessage();
             }
         }
-
 
         $livraisonOptions = $this->model->getLivraisonOptions();
         $categories = $this->categorieModel->getAllCategories();
@@ -147,9 +129,10 @@ class AnnonceController
         require BASE_PATH . "/app/views/addAd.php";
     }
 
-
-    public function deleteAd()
-    {
+    /* ============================
+       SUPPRIMER UNE ANNONCE
+    ============================ */
+    public function deleteAd() {
         if (!isset($_SESSION['user'])) {
             $redirect = urlencode("myAds");
             header("Location: " . BASE_URL . "index.php?action=login&redirect=$redirect");
@@ -161,7 +144,7 @@ class AnnonceController
 
         $annonce = $this->model->getAnnonceById($id);
 
-        if ($annonce['auteur'] != $_SESSION['user']['id']) {
+        if ($annonce['auteur'] != $_SESSION['user']['id'] && $_SESSION["user"]["role"] != "admin") {
             die("Accès interdit");
         }
 
@@ -175,38 +158,10 @@ class AnnonceController
         exit;
     }
 
-    public function buy()
-    {
-        if (!isset($_SESSION['user'])) {
-            $redirect = urlencode("buy&id=" . $_GET['id']);
-            header("Location: " . BASE_URL . "index.php?action=login&redirect=$redirect");
-            exit;
-        }
-
-        $id = $_GET['id'] ?? null;
-        if (!$id) die("Annonce introuvable");
-
-        $annonce = $this->model->getAnnonceById($id);
-
-        if (!$annonce['dispo']) {
-            die("Annonce déjà vendue");
-        }
-
-        require BASE_PATH . "/app/views/buy.php";
-    }
-
-    public function confirmReception()
-    {
-        if (!isset($_SESSION['user'])) {
-            die("Accès interdit");
-        }
-
-        $id = $_GET['id'] ?? null;
-        if (!$id) die("Annonce introuvable");
-    }
-
-    public function myAds()
-    {
+    /* ============================
+       MES ANNONCES
+    ============================ */
+    public function myAds() {
         if (!isset($_SESSION['user'])) {
             $redirect = urlencode("myAds");
             header("Location: " . BASE_URL . "index.php?action=login&redirect=$redirect");
@@ -218,38 +173,25 @@ class AnnonceController
         require BASE_PATH . "/app/views/myAds.php";
     }
 
-    public function profile() {
-    if (!isset($_SESSION["user"])) {
-        $redirect = urlencode("profile");
-        header("Location:". BASE_URL . "index.php?action=login&redirect=$redirect");
-        exit;
+    /* ============================
+       LISTE TOUTES LES ANNONCES
+    ============================ */
+    public function listAll() {
+        $page = $_GET['page'] ?? 1;
+        $limit = 10;
+
+        $total = $this->model->getAnnonceCount();
+        $totalPages = ceil($total / $limit);
+
+        $annonces = $this->model->getAdsPaginated($limit, $page);
+
+        $imagesByAd = [];
+        foreach ($annonces as $a) {
+            $imagesByAd[$a['id']] = $this->imageModel->getImagesByAnnonce($a['id']);
+        }
+
+        require BASE_PATH . "/app/views/listAll.php";
     }
-
-    $userId = $_SESSION["user"]["id"];
-
-    // Récupération des annonces
-    $annoncesEnVente =  $this->model->getAllAnnoncesEnVenteByAuteur($userId);
-    $annoncesVendues = $this->model->getAllAnnoncesVenduesByAuteur($userId);
-    $annoncesAchetees = $this->model->getAllAnnoncesAcheteesByAuteur($userId);
-
-    $imagesByAd = [];
-
-    foreach ($annoncesEnVente as $ad) {
-        $imagesByAd[$ad['id']] = $this->imageModel->getImagesByAnnonce($ad['id']);
-    }
-
-    foreach ($annoncesAchetees as $ad) {
-        $imagesByAd[$ad['id']] = $this->imageModel->getImagesByAnnonce($ad['id']);
-    }
-
-    foreach ($annoncesVendues as $ad) {
-        $imagesByAd[$ad['id']] = $this->imageModel->getImagesByAnnonce($ad['id']);
-    }
-
-    require BASE_PATH . "/app/views/profile.php";
-}
-
-
 }
 
 ?>

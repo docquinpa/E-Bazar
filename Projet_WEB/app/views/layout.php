@@ -46,7 +46,7 @@
         </main>
 
         <footer class="site-footer">
-            <p>Projet Web — Plateforme de petites annonces</p>
+            <p>E-Bazar | Projet de M1 Informatique | Langages Web</p>
         </footer>
         <div id="lightbox" class="lightbox hidden">
             <span class="close-lightbox">×</span>
@@ -59,7 +59,6 @@
         const BASE_URL = "<?= BASE_URL ?>";
         </script>
         <script src="<?= BASE_URL ?>js/homeCarousel.js"></script>
-        <script src="<?= BASE_URL ?>js/photoViewer.js"></script>
         <script src="<?= BASE_URL ?>js/lightbox.js"></script>
     </body>
 </html>

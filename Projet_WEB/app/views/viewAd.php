@@ -12,15 +12,19 @@ ob_start();
     <!-- Photos -->
     <div class="ad-photos">
         <?php if (!empty($images)): ?>
-            <div class="photo-viewer" data-images='<?= json_encode(array_column($images, "url")) ?>'>
-                <img class="viewer-img" src="<?= BASE_URL ?>upload/<?= htmlspecialchars($images[0]['url']) ?>" alt="">
-                <button class="viewer-arrow left">‹</button>
-                <button class="viewer-arrow right">›</button>
-            </div>
+            <?php foreach ($images as $img): ?>
+                <img
+                    class="ad-photo"
+                    src="<?= BASE_URL ?>upload/<?= htmlspecialchars($img['url']) ?>"
+                    data-filename="<?= htmlspecialchars($img['url']) ?>"
+                    alt="Photo de l'annonce"
+                >
+            <?php endforeach; ?>
         <?php else: ?>
             <img src="<?= BASE_URL ?>assets/no-image.jpg" class="single-photo" alt="Aucune photo">
         <?php endif; ?>
     </div>
+
 
     <!-- Description -->
     <h2>Description</h2>

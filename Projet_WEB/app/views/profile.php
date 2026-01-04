@@ -2,113 +2,171 @@
 $title = "Mon profil";
 ob_start();
 ?>
-<h2>Mon profil :</h2>
+<h2 class="page-title">Mon profil</h2>
 
-<h3 class="centerTitle">Mes annonces en ligne :</h3>
-<?php if (empty($annoncesEnVente)): ?>
-    <p class="info-result">Aucune annonce</p>
-<?php else:?>
-    <div class="ads-grid">
-        <?php foreach ($annoncesEnVente as $ad): ?>
 
-            <?php
-            // Récupération des images de l'annonce
-            $images = $imagesByAd[$ad['id']] ?? [];
+<!-- ============================
+     1) ANNONCES EN VENTE
+============================ -->
+<h3 class="page-title">Mes annonces en ligne :</h3>
 
-            // Liste des URLs
-            $urls = array_column($images, 'url');
+<div class="ad-list">
 
-            // Vignette (première image ou fallback)
-            $thumbnail = $urls[0] ?? "no-image.jpg";
-            ?>
+    <?php foreach ($annoncesEnVente as $ad): ?>
+        <?php
+        $images = $imagesByAd[$ad['id']] ?? [];
+        $urls = array_column($images, 'url');
+        $thumbnail = $urls[0] ?? "no-image.jpg";
+        ?>
 
-            <div class="ad-card">
+        <div class="ad-row">
 
-                <div class="ad-image"
-                    data-images='<?= json_encode($urls) ?>'>
-                    <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
-                </div>
+            <img class="ad-thumb" src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
 
+            <div class="ad-info">
                 <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
                 <p class="price"><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
-
-                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>"
-                class="btn">Voir l'annonce</a>
             </div>
 
-        <?php endforeach; ?>
-    </div>
-<?php endif ?>
-<h3 class="centerTitle">Mes achats :</h3>
-<?php if (empty($annoncesAchetees)): ?>
-    <p class="info-result">Aucune annonce</p>
-<?php else:?>
-    <div class="ads-grid">
-        <?php foreach ($annoncesAchetees as $ad): ?>
+            <div class="ad-actions">
+                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
 
-            <?php
-            // Récupération des images de l'annonce
-            $images = $imagesByAd[$ad['id']] ?? [];
+                <a href="<?= BASE_URL ?>index.php?action=deleteAd&id=<?= $ad["id"] ?>"
+                   class="btn-delete"
+                   onclick="return confirm('Supprimer cette annonce ?');">
+                    Supprimer
+                </a>
 
-            // Liste des URLs
-            $urls = array_column($images, 'url');
+                <a href="<?= BASE_URL ?>index.php?action=hideAd&id=<?= $ad["id"] ?>"
+                   class="btn-hide">
+                    Masquer
+                </a>
+            </div>
 
-            // Vignette (première image ou fallback)
-            $thumbnail = $urls[0] ?? "no-image.jpg";
-            ?>
+        </div>
 
-            <div class="ad-card">
+    <?php endforeach; ?>
 
-                <div class="ad-image"
-                    data-images='<?= json_encode($urls) ?>'>
-                    <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
-                </div>
+</div>
 
+
+
+<!-- ============================
+     2) ANNONCES VENDUES (À LIVRER)
+============================ -->
+<h3 class="page-title">Mes ventes (à livrer) :</h3>
+
+<div class="ad-list">
+
+    <?php foreach ($annoncesVendues as $ad): ?>
+        <?php
+        $images = $imagesByAd[$ad['id']] ?? [];
+        $urls = array_column($images, 'url');
+        $thumbnail = $urls[0] ?? "no-image.jpg";
+        ?>
+
+        <div class="ad-row">
+
+            <img class="ad-thumb" src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
+
+            <div class="ad-info">
                 <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
                 <p class="price"><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
-
-                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>"
-                class="btn">Voir l'annonce</a>
             </div>
 
-        <?php endforeach; ?>
-    </div>
-<?php endif ?>
-<h3 class="centerTitle">Mes Ventes :</h3>
-<?php if (empty($annoncesVendues)): ?>
-    <p class="info-result">Aucune annonce</p>
-<?php else:?>
-    <div class="ads-grid">
-        <?php foreach ($annoncesVendues as $ad): ?>
+            <div class="ad-actions">
+                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
 
-            <?php
-            // Récupération des images de l'annonce
-            $images = $imagesByAd[$ad['id']] ?? [];
+                <a href="<?= BASE_URL ?>index.php?action=markDelivered&id=<?= $ad["id"] ?>"
+                   class="btn-primary"
+                   onclick="return confirm('Confirmer la livraison ?');">
+                    Marquer comme livré
+                </a>
+            </div>
 
-            // Liste des URLs
-            $urls = array_column($images, 'url');
+        </div>
 
-            // Vignette (première image ou fallback)
-            $thumbnail = $urls[0] ?? "no-image.jpg";
-            ?>
+    <?php endforeach; ?>
 
-            <div class="ad-card">
+</div>
 
-                <div class="ad-image"
-                    data-images='<?= json_encode($urls) ?>'>
-                    <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
-                </div>
 
+
+<!-- ============================
+     3) ANNONCES ACHETÉES
+============================ -->
+<h3 class="page-title">Mes achats :</h3>
+
+<div class="ad-list">
+
+    <?php foreach ($annoncesAchetees as $ad): ?>
+        <?php
+        $images = $imagesByAd[$ad['id']] ?? [];
+        $urls = array_column($images, 'url');
+        $thumbnail = $urls[0] ?? "no-image.jpg";
+        ?>
+
+        <div class="ad-row">
+
+            <img class="ad-thumb" src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
+
+            <div class="ad-info">
                 <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
                 <p class="price"><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
-
-                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>"
-                class="btn">Voir l'annonce</a>
             </div>
 
-        <?php endforeach; ?>
-    </div>
-<?php endif ?>
+            <div class="ad-actions">
+                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
+
+                <a href="<?= BASE_URL ?>index.php?action=confirmReception&id=<?= $ad["id"] ?>"
+                   class="btn-primary"
+                   onclick="return confirm('Confirmer la réception du bien ?');">
+                    J'ai reçu le bien
+                </a>
+            </div>
+
+        </div>
+
+    <?php endforeach; ?>
+
+</div>
+
+
+
+<!-- ============================
+     4) ANNONCES LIVRÉES (TA CONDITION)
+============================ -->
+<h3 class="page-title">Biens livrés :</h3>
+
+<div class="ad-list">
+
+    <?php foreach ($annoncesLivrees as $ad): ?>
+        <?php
+        $images = $imagesByAd[$ad['id']] ?? [];
+        $urls = array_column($images, 'url');
+        $thumbnail = $urls[0] ?? "no-image.jpg";
+        ?>
+
+        <div class="ad-row">
+
+            <img class="ad-thumb" src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
+
+            <div class="ad-info">
+                <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
+                <p class="price"><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
+            </div>
+
+            <div class="ad-actions">
+                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
+            </div>
+
+        </div>
+
+    <?php endforeach; ?>
+
+</div>
+
+
 <?php
 $content = ob_get_clean();
 require __DIR__ . "/layout.php";

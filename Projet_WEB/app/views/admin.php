@@ -2,12 +2,12 @@
 $title = "Admin";
 ob_start();
 ?>
-<h2>Panneau d'administration :</h2>
+<h2 class="page-title">Panneau d'administration :</h2>
 <?php if (isset($error)): ?>
-    <p class="infos-result"><?= $error ?></p>
+    <p class="error-message"><?= $error ?></p>
 <?php endif ?>
 <?php if (isset($success)): ?>
-    <p class="infos-result"><?= $success ?></p>
+    <p class="success-message"><?= $success ?></p>
 <?php endif ?>
 <h3 class="centerTitle">Ajouter une catégorie :</h3>
 <div class="form-container">
@@ -18,10 +18,10 @@ ob_start();
     </form>
 </div>
 <div class="form-container">
-    <form action="<?= BASE_URL ?>index.php?action=modifyCategory" method="POST">
+    <form action="<?= BASE_URL ?>index.php?action=updateCategory" method="POST">
         <label for="choice_cat">Choisir la Catégorie à modifier:</label>
         <select id="choice_cat" name="category">
-            <option value="">Choisir une option</option>
+            <option value="" disabled selected>Choisir une option</option>
             <?php foreach ($categories as $cat): ?>
                 <option value="<?=$cat["nom"]?>"><?=$cat["nom"]?></option>
             <?php endforeach; ?>

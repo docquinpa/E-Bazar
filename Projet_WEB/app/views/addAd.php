@@ -6,6 +6,9 @@ ob_start();
 <div class="page-container">
 
     <h2 class="page-title">Créer une annonce</h2>
+    <?php if (!empty($error)) : ?>
+        <p class="error-message"><?= htmlspecialchars($error) ?></p>
+    <?php endif; ?>
 
     <form action="<?= BASE_URL ?>index.php?action=addAd"
           method="POST"

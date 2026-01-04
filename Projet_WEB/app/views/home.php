@@ -2,24 +2,20 @@
 $title = "Accueil";
 ob_start();
 ?>
+<div class="category-bar">
+    <?php foreach ($categories as $cat): ?>
+        <a href="<?= BASE_URL ?>index.php?action=listCategory&id=<?= $cat['id'] ?>" class="category-pill">
+            <?= htmlspecialchars($cat['nom']) ?>
+            <span class="count"><?= $cat['count'] ?? 0 ?></span>
+        </a>
+    <?php endforeach; ?>
+</div>
 
 <div class="home-container">
 
     <!-- BARRE DE RECHERCHE -->
     <div class="search-bar">
         <div class="search-box">
-
-        <div class="category-dropdown">
-            <button class="category-btn">Catégories</button>
-            <div class="dropdown-content">
-                <?php foreach ($categories as $cat): ?>
-                    <a href="<?= BASE_URL ?>index.php?action=listCategory&id=<?= $cat['id'] ?>">
-                        <?= htmlspecialchars($cat['nom']) ?>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        </div>
-
         <form action="<?= BASE_URL ?>index.php" method="GET" class="search-form">
             <input type="hidden" name="action" value="search">
             <input type="text" name="q" placeholder="Rechercher une annonce...">
@@ -51,13 +47,14 @@ ob_start();
                 $urls = array_column($images, 'url');
                 $thumbnail = $urls[0] ?? "no-image.jpg";
                 ?>
+                <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn">
+                    <div class="carousel-item">
+                        <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
+                        <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
+                        <p><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
 
-                <div class="carousel-item">
-                    <img src="<?= BASE_URL ?>upload/<?= $thumbnail ?>" alt="">
-                    <h3><?= htmlspecialchars($ad["titre"]) ?></h3>
-                    <p><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
-                    <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn">Voir</a>
-                </div>
+                    </div>
+                </a>
 
             <?php endforeach; ?>
 
