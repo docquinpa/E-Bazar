@@ -317,6 +317,45 @@ class AnnonceModel {
         return $this->db->query("SELECT COUNT(*) FROM Annonce WHERE dispo=1")->fetchColumn();
     }
 
+    public function getAdsPaginatedByTitle($titre, $limit, $page) {
+
+        $sql = "
+            SELECT *
+            FROM Annonce
+            WHERE dispo = 1
+            AND titre LIKE :titre
+            ORDER BY id DESC
+            LIMIT :limit OFFSET :offset
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        // Bind du titre
+        $stmt->bindValue(':titre', "%$titre%", PDO::PARAM_STR);
+
+        // Bind pagination
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)($limit * ($page - 1)), PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAnnonceCountByTitle($titre) {
+        $sql = "SELECT COUNT(*)
+                FROM Annonce
+                WHERE dispo = 1
+                AND titre LIKE :titre";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':titre', "%$titre%", PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
+
+
+
 
     /* ============================
        VALIDATION PDO

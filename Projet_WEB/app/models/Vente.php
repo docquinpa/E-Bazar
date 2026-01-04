@@ -35,7 +35,7 @@ class VenteModel {
             SELECT Annonce.*, Vente.estEnvoye, Vente.estRecu
             FROM Vente
             JOIN Annonce ON Annonce.id = Vente.id_annonce
-            WHERE Vente.id_vendeur = ?
+            WHERE Vente.id_vendeur = ? AND Vente.estEnvoye=0
         ";
         $req = $this->db->prepare($sql);
         $req->execute([$vendeurId]);

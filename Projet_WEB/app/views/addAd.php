@@ -6,6 +6,7 @@ ob_start();
 <div class="page-container">
 
     <h2 class="page-title">Créer une annonce</h2>
+
     <?php if (!empty($error)) : ?>
         <p class="error-message"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
@@ -18,25 +19,48 @@ ob_start();
         <!-- Titre -->
         <div class="form-group">
             <label for="titre" class="form-label">Titre</label>
-            <input type="text" id="titre" name="titre" class="form-input" required>
+            <input type="text"
+                   id="titre"
+                   name="titre"
+                   class="form-input"
+                   required
+                   minlength="5"
+                   maxlength="30">
         </div>
 
         <!-- Description -->
         <div class="form-group">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description" rows="5" class="form-textarea" required></textarea>
+            <textarea id="description"
+                      name="description"
+                      rows="5"
+                      class="form-textarea"
+                      required
+                      minlength="5"
+                      maxlength="200"></textarea>
         </div>
 
         <!-- Prix -->
         <div class="form-group">
             <label for="prix" class="form-label">Prix (€)</label>
-            <input type="number" id="prix" name="prix" step="0.01" min="0" class="form-input" required>
+            <input type="number"
+                   id="prix"
+                   name="prix"
+                   step="0.01"
+                   min="0"
+                   class="form-input"
+                   required>
         </div>
 
         <!-- Catégorie -->
         <div class="form-group">
             <label for="categorie" class="form-label">Catégorie</label>
-            <select name="categorie" id="categorie" class="form-select" required>
+            <select name="categorie"
+                    id="categorie"
+                    class="form-select"
+                    required>
+                <option value="" disabled selected>-- Choisir une catégorie --</option>
+
                 <?php foreach ($categories as $cat): ?>
                     <option value="<?= $cat['id'] ?>">
                         <?= htmlspecialchars($cat['nom']) ?>
@@ -47,11 +71,14 @@ ob_start();
 
         <!-- Livraison -->
         <div class="form-group">
-            <label class="form-label">Modes de livraison</label>
-            <div class="checkbox-group">
+            <label class="form-label">Modes de livraison *</label>
+            <div class="checkbox-group" id="livraisonGroup">
                 <?php foreach ($livraisonOptions as $option): ?>
                     <label class="checkbox-item">
-                        <input type="checkbox" name="livraison[]" value="<?= $option ?>" class="checkbox-input">
+                        <input type="checkbox"
+                               name="livraison[]"
+                               value="<?= $option ?>"
+                               class="checkbox-input">
                         <span class="checkbox-label"><?= htmlspecialchars($option) ?></span>
                     </label>
                 <?php endforeach; ?>
@@ -61,7 +88,12 @@ ob_start();
         <!-- Upload images -->
         <div class="form-group">
             <label for="images" class="form-label">Images (max 5, JPG uniquement)</label>
-            <input type="file" name="images[]" id="images" accept="image/jpeg" multiple class="form-file">
+            <input type="file"
+                   name="images[]"
+                   id="images"
+                   accept="image/jpeg"
+                   multiple
+                   class="form-file">
         </div>
 
         <button type="submit" class="btn btn-primary">Créer l'annonce</button>

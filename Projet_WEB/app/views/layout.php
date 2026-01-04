@@ -22,17 +22,24 @@
                 <a href="index.php?action=home">Accueil</a>
 
                 <?php if (!empty($_SESSION['user'])) : ?>
-                <a href="index.php?action=profile">Mon espace</a>
 
-                <?php if ($_SESSION['user']['role'] === 'admin') : ?>
-                    <a href="index.php?action=admin">Admin</a>
-                <?php endif; ?>
+                    <?php if ($_SESSION['user']['role'] !== 'admin') : ?>
+                        <a href="index.php?action=profile">Mon espace</a>
+                    <?php endif; ?>
 
-                <a href="index.php?action=logout">Déconnexion</a>
+                    <?php if ($_SESSION['user']['role'] === 'admin') : ?>
+                        <a href="index.php?action=admin">Admin</a>
+                    <?php endif; ?>
+
+                    <a href="index.php?action=logout">Déconnexion</a>
+
                 <?php else : ?>
+
                     <a href="index.php?action=login">Connexion</a>
                     <a href="index.php?action=register">Inscription</a>
+
                 <?php endif; ?>
+
             </nav>
         </header>
 
@@ -47,6 +54,13 @@
 
         <footer class="site-footer">
             <p>E-Bazar | Projet de M1 Informatique | Langages Web</p>
+            <p>
+                <a href="https://youtu.be/dQw4w9WgXcQ?list=RDdQw4w9WgXcQ&t=45" target="_blank">
+                    <img style="border:0;width:88px;height:31px"
+                        src="https://jigsaw.w3.org/css-validator/images/vcss"
+                        alt="CSS Valide !" />
+                </a>
+            </p>
         </footer>
         <div id="lightbox" class="lightbox hidden">
             <span class="close-lightbox">×</span>

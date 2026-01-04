@@ -37,20 +37,27 @@ ob_start();
                     <p class="price"><?= number_format($ad["prix"], 2, ',', ' ') ?> €</p>
                 </div>
 
-                <div class="ad-actions">
-                    <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
+                    <div class="ad-actions">
+                        <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
 
-                    <a href="<?= BASE_URL ?>index.php?action=deleteAd&id=<?= $ad["id"] ?>"
-                    class="btn-delete"
-                    onclick="return confirm('Supprimer cette annonce ?');">
-                        Supprimer
-                    </a>
+                        <a href="<?= BASE_URL ?>index.php?action=deleteAd&id=<?= $ad["id"] ?>"
+                        class="btn-delete"
+                        onclick="return confirm('Supprimer cette annonce ?');">
+                            Supprimer
+                        </a>
 
-                    <a href="<?= BASE_URL ?>index.php?action=hideAd&id=<?= $ad["id"] ?>"
-                    class="btn-hide">
-                        Masquer
-                    </a>
-                </div>
+                        <?php if ($ad['dispo'] == 1): ?>
+                            <!-- Annonce visible → bouton Masquer -->
+                            <a href="<?= BASE_URL ?>index.php?action=masquer&id=<?= $ad["id"] ?>" class="btn-view">
+                                Masquer
+                            </a>
+                        <?php else: ?>
+                            <!-- Annonce masquée → bouton Démasquer -->
+                            <a href="<?= BASE_URL ?>index.php?action=demasquer&id=<?= $ad["id"] ?>" class="btn-view">
+                                Démasquer
+                            </a>
+                        <?php endif; ?>
+                    </div>
 
             </div>
 
@@ -86,7 +93,7 @@ ob_start();
                 <div class="ad-actions">
                     <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
 
-                    <a href="<?= BASE_URL ?>index.php?action=markDelivered&id=<?= $ad["id"] ?>"
+                    <a href="<?= BASE_URL ?>index.php?action=markSent&id=<?= $ad["id"] ?>"
                     class="btn-primary"
                     onclick="return confirm('Confirmer la livraison ?');">
                         Marquer comme livré
@@ -128,7 +135,7 @@ ob_start();
                 <div class="ad-actions">
                     <a href="<?= BASE_URL ?>index.php?action=viewAd&id=<?= $ad["id"] ?>" class="btn-view">Voir</a>
 
-                    <a href="<?= BASE_URL ?>index.php?action=confirmReception&id=<?= $ad["id"] ?>"
+                    <a href="<?= BASE_URL ?>index.php?action=markReceived&id=<?= $ad["id"] ?>"
                     class="btn-primary"
                     onclick="return confirm('Confirmer la réception du bien ?');">
                         J'ai reçu le bien

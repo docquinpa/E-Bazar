@@ -2,7 +2,7 @@
 
 define('BASE_PATH', dirname(__DIR__));
 define('CONFIG_FILE', BASE_PATH . '/config/config.php');
-define('INSTALLED_FLAG', BASE_PATH . '/storage/.installed');
+define('INSTALLED_FLAG', BASE_PATH . '/storage/install.log');
 define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/');
 
 
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Si le fichier n'existe pas, tester la capacité à le créer
         elseif (!file_exists($installedFile)) {
             if (@file_put_contents($installedFile, '') === false) {
-                $error = "Impossible de créer le fichier installed.flag.";
+                $error = "Impossible de créer le fichier installed.log.";
             } else {
                 unlink($installedFile); // On nettoie, il sera réécrit plus tard
             }
@@ -157,8 +157,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // ANNONCE
             "CREATE TABLE IF NOT EXISTS Annonce (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                titre VARCHAR(255) NOT NULL,
-                description TEXT NOT NULL,
+                titre VARCHAR(30) NOT NULL,
+                description VARCHAR(200) NOT NULL,
                 prix DECIMAL(10,2) NOT NULL,
                 livraison SET('Mondial Relay', 'Colissimo', 'La Poste', 'Remise en main propre') NOT NULL,
                 categorie INT NOT NULL,
@@ -189,11 +189,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 estEnvoye BOOLEAN DEFAULT FALSE,
                 estRecu BOOLEAN DEFAULT FALSE,
                 FOREIGN KEY (id_annonce) REFERENCES Annonce(id)
-                    ON DELETE RESTRICT ON UPDATE CASCADE,
+                    ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (id_vendeur) REFERENCES Utilisateur(id)
-                    ON DELETE RESTRICT ON UPDATE CASCADE,
+                    ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (id_acheteur) REFERENCES Utilisateur(id)
-                    ON DELETE RESTRICT ON UPDATE CASCADE
+                    ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"
         ];
 
@@ -210,25 +210,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Création du compte admin
     // ============================
 
-    if (empty($error)) {
+if (empty($error)) {
+
+    $check = $mysqli->query("SELECT id FROM Utilisateur WHERE role = 'admin' LIMIT 1");
+
+    if ($check && $check->num_rows === 0) {
 
         $hashed = password_hash($admin_pass, PASSWORD_DEFAULT);
 
         $stmt = $mysqli->prepare(
             "INSERT INTO Utilisateur (email, username, password, role)
-             VALUES (?, ?, ?,'admin')"
+             VALUES (?, ?, ?, 'admin')"
         );
 
-        if (!$stmt) {
-            $error = "Impossible de préparer la création du compte admin.";
-        } else {
-            $stmt->bind_param("sss", $admin_email, $admin_user,$hashed);
-
-            if (!$stmt->execute()) {
-                $error = "Impossible de créer le compte administrateur.";
-            }
+        if ($stmt) {
+            $stmt->bind_param("sss", $admin_email, $admin_user, $hashed);
+            $stmt->execute(); // même si ça échoue, on ne bloque pas l'installation
         }
     }
+
+}
+
 
     // ============================
     // Génération du fichier config
@@ -249,10 +251,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // ============================
+    // Écriture du fichier install.log
+    // ============================
+
     if (empty($error)) {
-       header('Location: ' . BASE_URL);
-       exit;
+
+        $date = date('Y-m-d H:i:s');
+        $logContent = "Installation réussie le $date\n";
+
+        if (file_put_contents(INSTALLED_FLAG, $logContent) === false) {
+            $error = "Impossible d'écrire le fichier install.log.";
+        }
     }
+
+    // ============================
+    // Redirection finale
+    // ============================
+
+    if (empty($error)) {
+        header('Location: ' . BASE_URL);
+        exit;
+    }
+
 }
 
 // Valeurs par défaut

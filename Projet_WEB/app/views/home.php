@@ -10,15 +10,18 @@ ob_start();
         </a>
     <?php endforeach; ?>
 </div>
-
+<?php if (!empty($_SESSION['error'])): ?>
+    <p class="error-message"><?= htmlspecialchars($_SESSION['error']) ?></p>
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 <div class="home-container">
 
     <!-- BARRE DE RECHERCHE -->
     <div class="search-bar">
         <div class="search-box">
         <form action="<?= BASE_URL ?>index.php" method="GET" class="search-form">
-            <input type="hidden" name="action" value="search">
-            <input type="text" name="q" placeholder="Rechercher une annonce...">
+            <input type="hidden" name="action" value="listSearch">
+            <input type="text" name="titre" placeholder="Rechercher une annonce...">
             <button type="submit" class="search-btn">
                 <ion-icon name="search-outline"></ion-icon>
             </button>
@@ -34,7 +37,7 @@ ob_start();
     </div>
 
     <!-- CARROUSEL DES 4 DERNIÈRES ANNONCES -->
-    <h2>Dernières annonces</h2>
+    <h2 class="page-title">Dernières annonces</h2>
 
     <div class="carousel">
         <div class="carousel-track">

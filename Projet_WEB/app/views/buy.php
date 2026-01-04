@@ -18,6 +18,7 @@ ob_start();
 
         <label for="livraison">Choisissez un mode de livraison :</label>
         <select name="livraison" id="livraison" required>
+            <option value="" disabled selected>-- Choisir un mode de livraison--</option>
             <?php foreach ($annonce['livraison'] as $mode): ?>
                 <option value="<?= htmlspecialchars($mode) ?>">
                     <?= htmlspecialchars($mode) ?>

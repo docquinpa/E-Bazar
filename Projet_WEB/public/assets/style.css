@@ -160,6 +160,10 @@ button:hover {
 .site-footer {
     text-align: center;
     margin-top: 2px;
+    padding: 5px 20px 5px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .logo img {
@@ -871,7 +875,7 @@ footer p {
 .buy-ad-info .price {
     font-size: 1.4em;
     font-weight: bold;
-    color: var(primary-light);
+    color: var(--primary-light);
 }
 
 .buy-form {

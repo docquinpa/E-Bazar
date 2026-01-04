@@ -21,6 +21,12 @@ class VenteController {
             exit;
         }
 
+        if (!empty($_SESSION['user']['role']) && $_SESSION['user']['role'] === "admin") {
+            $_SESSION['error'] = "Vous ne pouvez pas acheter avec le compte admin.";
+            header("Location: " . BASE_URL . "index.php?action=home");
+            exit;
+        }
+
         $annonceId = $_GET['id'] ?? null;
         if (!$annonceId) die("Annonce introuvable");
 
@@ -110,11 +116,17 @@ class VenteController {
         if ($vente['id_acheteur'] != $_SESSION['user']['id']) {
             die("Accès interdit");
         }
+        if ($vente['estEnvoye'] !== 1) {
+            $_SESSION['error'] = "La vente n'a pas encore été envoyée";
+            header("Location: " . BASE_URL . "index.php?action=home");
+            exit;
+        }
 
         $this->venteModel->markAsReceived($annonceId);
 
         // Une fois reçu → supprimer la vente
         $this->venteModel->deleteVente($annonceId);
+        $this->annonceModel->deleteAnnonce($annonceId);
 
         header("Location: index.php?action=profile");
         exit;

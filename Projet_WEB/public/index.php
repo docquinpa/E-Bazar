@@ -97,6 +97,23 @@ switch ($action) {
         $annonceController->listAll();
         break;
 
+    case 'listSearch':
+        $annonceController->listSearch();
+        break;
+
+    case 'deleteAd':
+        $annonceController->deleteAd();
+        break;
+
+    case 'masquer':
+        $annonceController->masquer();
+        break;
+
+    case 'demasquer':
+        $annonceController->demasquer();
+        break;
+
+
 
     /* ============================
        VENTES

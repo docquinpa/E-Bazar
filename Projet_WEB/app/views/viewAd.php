@@ -49,7 +49,8 @@ ob_start();
             <p class="sold">Cette annonce est déjà vendue</p>
         <?php endif; ?>
 
-        <?php if (isset($_SESSION['user']) && $_SESSION['user']['id'] == $annonce['auteur']): ?>
+        <?php if (isset($_SESSION['user']) && ($_SESSION['user']['id'] == $annonce['auteur'] || $_SESSION['user']['role'] === 'admin')): ?>
+
             <a href="<?= BASE_URL ?>index.php?action=deleteAd&id=<?= $annonce['id'] ?>" class="btn-delete">
                 Supprimer l'annonce
             </a>

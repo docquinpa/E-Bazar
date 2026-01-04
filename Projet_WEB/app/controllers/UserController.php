@@ -86,7 +86,7 @@ class UserController {
                 $_SESSION['user'] = $user;
 
                 if (!empty($redirect)) {
-                    header("Location: index.php?action=" . urlencode($redirect));
+                    header("Location: index.php?action=" . urldecode($redirect));
                     exit;
                 }
 
@@ -126,6 +126,12 @@ class UserController {
         if (!isset($_SESSION["user"])) {
             $redirect = urlencode("profile");
             header("Location: index.php?action=login&redirect=$redirect");
+            exit;
+        }
+
+        if (!empty($_SESSION['user']['role']) && $_SESSION['user']['role'] === "admin") {
+            $_SESSION['error'] = "Vous n'avez pas d'espace personnel.";
+            header("Location: " . BASE_URL . "index.php?action=home");
             exit;
         }
 

@@ -50,12 +50,44 @@ ob_start();
             </a>
         <?php endif; ?>
 
-        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <a class="page-link <?= ($i == $page) ? 'active' : '' ?>"
-               href="<?= BASE_URL ?>index.php?action=listAll&page=<?= $i ?>">
-                <?= $i ?>
-            </a>
-        <?php endfor; ?>
+        <?php
+        // Helper pour afficher un lien
+        function pageLinkAll($i, $page) {
+            $active = ($i == $page) ? 'active' : '';
+            return '<a class="page-link ' . $active . '" href="index.php?action=listAll&page=' . $i . '">' . $i . '</a>';
+        }
+
+        // 1) Toujours afficher les 2 premières pages
+        echo pageLinkAll(1, $page);
+        if ($totalPages >= 2) {
+            echo pageLinkAll(2, $page);
+        }
+
+        // 2) Ellipse si on est loin du début
+        if ($page > 4) {
+            echo '<span class="page-ellipsis">...</span>';
+        }
+
+        // 3) Pages autour de la page actuelle
+        for ($i = $page - 1; $i <= $page + 1; $i++) {
+            if ($i > 2 && $i < $totalPages - 1) {
+                echo pageLinkAll($i, $page);
+            }
+        }
+
+        // 4) Ellipse si on est loin de la fin
+        if ($page < $totalPages - 3) {
+            echo '<span class="page-ellipsis">...</span>';
+        }
+
+        // 5) Toujours afficher les 2 dernières pages
+        if ($totalPages > 3) {
+            echo pageLinkAll($totalPages - 1, $page);
+        }
+        if ($totalPages > 2) {
+            echo pageLinkAll($totalPages, $page);
+        }
+        ?>
 
         <?php if ($page < $totalPages): ?>
             <a class="page-link"
@@ -66,6 +98,7 @@ ob_start();
 
     </div>
 <?php endif; ?>
+
 
 <?php
 $content = ob_get_clean();
