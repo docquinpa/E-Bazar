@@ -60,5 +60,6 @@
         </script>
         <script src="<?= BASE_URL ?>js/homeCarousel.js"></script>
         <script src="<?= BASE_URL ?>js/lightbox.js"></script>
+        <script src="<?= BASE_URL ?>js/chooseList.js"></script>
     </body>
 </html>

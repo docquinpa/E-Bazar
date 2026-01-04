@@ -704,6 +704,14 @@ button:hover {
     outline: none;
 }
 
+#choice_cat {
+    width : 100%;
+    height : 3em;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+
+}
+
 /* Textarea */
 .form-textarea {
     resize: vertical;
@@ -914,7 +922,14 @@ footer p {
     background: var(--primary);
 }
 
+/* ============================
+   PAGE PROFIL
+============================ */
 
+.sect {
+    display: none;
+}
 
-
-
+.sect.active {
+    display: block;
+}
